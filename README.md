@@ -1,6 +1,6 @@
 # CollocateR
 
-CollocateR is a package designed to generate collocates for a keyword in a corpus. Taking a corpus generated through the [tm](https://r-forge.r-project.org/projects/tm/) package,[^tm] CollocateR generates a list of matrices with the keyword in the middle column and neighbouring words in columns to each side. So, for instance, the first ten collocates for 'poor' in Charles Dickens's *Bleak House* are set out as follows:
+CollocateR is a package designed to generate collocates for a keyword in a corpus. Taking a corpus generated through the [tm](https://r-forge.r-project.org/projects/tm/) package,<sup id="a1">[1](#f1)</sup> CollocateR generates a list of matrices with the keyword in the middle column and neighbouring words in columns to each side. So, for instance, the first ten collocates for 'poor' in Charles Dickens's *Bleak House* are set out as follows:
 
 |     4L     |  3L   |    2L    | 1L  | keyword |    1R    |     2R     |   3R    |       4R       |
 |:----------:|:-----:|:--------:|:---:|:-------:|:--------:|:----------:|:-------:|:--------------:|
@@ -15,12 +15,19 @@ CollocateR is a package designed to generate collocates for a keyword in a corpu
 |  presence  |  one  |    of    | the |  poor   |  little  |   things   |  fell   | downstairsdown |
 |  hearing   |  we   | followed | the |  poor   |  child   |    who     |   had   |    tumbled     |
 
-The `collocate` function operates as follows.
+## Preparing the corpus
 
-First: import a series of texts using the 'tm' package
+Import a series of texts using the 'tm' package
 ```
 library(tm)
 dickens <- Corpus(DirSource("/Dickens Texts/"), readerControl = list(language = "en"))
+```
+
+## Collocate
+
+The collocate function produces the basic collocation matrices.
+
+```
 dickens_collocates <- collocate(dickens, "poor", collocation_width = 4, tidy=TRUE)
 ```
 
@@ -40,7 +47,7 @@ This is an early draft: statistical significance tests are to be included asap.
 
 <!-- footnote -->
 
-[^tm]: Ingo Feinerer, Kurt Hornik, and David Meyer (2008). Text Mining Infrastructure in R. _ Journal of
-  Statistical Software_ 25(5): 1-54. URL: http://www.jstatsoft.org/v25/i05/
+<b id="f1">1</b> Ingo Feinerer, Kurt Hornik, and David Meyer (2008). Text Mining Infrastructure in R. _ Journal of
+  Statistical Software_ 25(5): 1-54. URL: http://www.jstatsoft.org/v25/i05/  [↩](#a1)
 
 <!-- footnote ends -->
