@@ -47,7 +47,7 @@ This is an early draft: statistical significance tests are to be included asap.
 
 <!-- footnote -->
 
-<b id="f1">1</b> Ingo Feinerer, Kurt Hornik, and David Meyer (2008). Text Mining Infrastructure in R. _ Journal of
+<b id="f1">1</b> Ingo Feinerer, Kurt Hornik, and David Meyer (2008). Text Mining Infrastructure in R. _Journal of
   Statistical Software_ 25(5): 1-54. URL: http://www.jstatsoft.org/v25/i05/  [↩](#a1)
 
 <!-- footnote ends -->
