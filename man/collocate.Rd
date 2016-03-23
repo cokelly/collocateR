@@ -4,7 +4,7 @@
 \alias{collocate}
 \title{A collocation function}
 \usage{
-collocate(corpus, keyword, collocation_width = 4, tidy = FALSE)
+collocate(corpus, keyword, collocation_width = 4, tidy = TRUE)
 }
 \arguments{
 \item{corpus}{A tm corpus}
@@ -13,7 +13,9 @@ collocate(corpus, keyword, collocation_width = 4, tidy = FALSE)
 
 \item{collocation_width}{The number of neighbouring words on each side}
 
-\item{tidy}{Tidy the corpus - remove punctuation, numbers, empty lines and whitespace, convert to lowercase}
+\item{tidy}{Tidy the corpus - remove punctuation, numbers, empty lines (optional) and whitespace, convert to lowercase}
+
+\item{remove_empty_lines}{Remove empty lines from the corpus (default: TRUE)}
 }
 \description{
 Takes a tm corpus as input, returns a list of matrices containing collocates as output.

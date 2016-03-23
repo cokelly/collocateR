@@ -31,7 +31,7 @@ The collocate function produces the basic collocation matrices.
 dickens_collocates <- collocate(dickens, "poor", collocation_width = 4, tidy=TRUE)
 ```
 
-### Tidy
+## Tidy
 
 The `tidy` function is simply a shortcut to `tm` functions. It
 
@@ -40,8 +40,16 @@ The `tidy` function is simply a shortcut to `tm` functions. It
 3. Strips white spaces
 4. Removes empty lines
 
+Although it is much slower, I strongly recommend running 'tidy' on the corpus. The function is separated out in case you wish to make additional adjustments to the corpus between tidying and running the collocate.
 
-This is an early draft: statistical significance tests are to be included asap.
+## Todo
+
+This is an early draft: statistical significance tests are to be included asap. These will include:
+
+1. t-score
+2. z-score
+3. mutual information
+4. tf-idf (both calculating collocate matrix to document and using tm's functions to calculate from corpus as a whole)
 
 
 
