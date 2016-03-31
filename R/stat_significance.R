@@ -10,10 +10,19 @@
 #' library(tm)
 #' data("crude")
 #' oil_kwic <- collocate(crude,"oil", collocation_width = 6, tidy = TRUE)
-#' observed_expected(crude, oil_kwic)
+#' significance(crude, oil_kwic)
 
-observed_expected <- function(origcorpus, collocates, tidy = TRUE, threshold = 3){
+significance <- function(origcorpus, collocates, tidy = TRUE, threshold = 3){
 
+      require(tm)
+# Remove any collocates where the kwic was absent (and so the function returned a character vector saying that "The keyword does not appear in this document")
+      
+      character_catch <- which(lapply(collocates, class) == "character")
+      if(length(character_catch > 0)){
+      collocates <- collocates[-character_catch]
+      origcorpus <- origcorpus[-character_catch]
+      }
+      
 ###########################
       # Tests
 ###########################
@@ -80,25 +89,19 @@ observed_expected <- function(origcorpus, collocates, tidy = TRUE, threshold = 3
       remove_zeros <- function(list_element){
             nonzeros <- which(list_element != 0)
             list_element2 <- list_element[nonzeros,]
+            names_colls <- names_colls[nonzeros]
             return(list_element2)
       }
 
       list_tdm_colls <- lapply(list_tdm_colls, function(x) as.matrix(remove_zeros(x)))
 
       
-# A function to remove low frequency words (default 3)
       
-      if(threshold > 0){
-      remove_threshold <- function(list_element){
-            lowerthreshold <- which(list_element <= threshold)
-            list_element2 <- list_element[-lowerthreshold,]
-            return(list_element2)
-      }}
+# Remove any list elements that contain no words above the threshold
       
-      list_tdm_colls <- lapply(list_tdm_colls, function(x) as.matrix(remove_threshold(x)))
+
       
-# Cbind to add percentages for the collocates and rownames as a column
-      #list_tdm_colls <- lapply(list_tdm_colls, function(x) cbind(x, apply(x, 1, function(y) y/colSums(x)*100)))
+# Cbind to add rownames as a column
       list_tdm_colls <- lapply(list_tdm_colls, function(x) (cbind(rownames(x), x)))
 
 
@@ -120,29 +123,47 @@ matches_across <- lapply(list_tdm_colls, function(x) find_matches(x))
 
 list_matches_across <- lapply(seq_along(1:length(matches_across)), function(x) as.matrix(matches_across[[x]][,x])) # So for instance I want column 1 from list element 1 and so on.
 
-# Divide each word frequency by the overall wordcount then multipy by
+# To calculate expected freq, divide each word frequency by the overall wordcount then multipy by kwic matrix wordcount
 list_matches_across <- lapply(seq_along(1:length(list_matches_across)), function(x) cbind(list_matches_across[[x]], (list_matches_across[[x]]/wordcounts_orig[x])*wordcount_colls[x]))
 
 ###########################
       # Cbind the full occurrences with expected freq
 ###########################
 
-list_tdm_colls <- lapply(seq_along(1:length(list_tdm_colls)), function(x) cbind(list_tdm_colls[[x]], list_matches_across[[x]][,2]))
+list_tdm_colls <- lapply(seq_along(1:length(list_tdm_colls)), function(x) cbind(list_tdm_colls[[x]], matrix(list_matches_across[[x]][,2])))
 
 # Cbind with a calculation dividing observed freq by expected
 
 list_tdm_colls <- lapply(list_tdm_colls, function(x) cbind(x, as.numeric(x[,2])/as.numeric(x[,3])))
 # Remove all but the count and the association
 list_tdm_colls <- lapply(list_tdm_colls, function(x) cbind(x[,1:2], x[,4]))
+###########################
+      ## Apply a threshold test
+###########################
+threshold_test <- function(list_element){
+      x <- which(list_element[,2] <= threshold)
+      list_element <- list_element[-x,]
+      if(class(list_element) != "matrix"){
+            list_element <- as.matrix(list_element)
+            list_element <- t(list_element)
+      }
+      return(list_element)
+}
+
+list_tdm_colls <- lapply(list_tdm_colls, function(x) threshold_test(x))
+
 # Sort the lists
-list_tdm_colls <- lapply(list_tdm_colls, function(x) x[order(as.numeric(x[,3]), decreasing = TRUE),])
+list_tdm_colls <- lapply(list_tdm_colls, function(x) if(nrow(x) > 1){x[order(as.numeric(x[,3]), decreasing = TRUE),]} else {x <- x})
 
 # Assign colnames, sadly through a for loop
 
 for(i in 1:length(list_tdm_colls)){
-      colnames_colls <- c(paste(names_colls[i], keyword2, "collocates", sep="_"), "count", "observed/expected ratio")
+      colnames_colls <- c(paste(names_colls[i], keyword2, "collocates", sep="_"), "count", "observed-expected ratio")
       colnames(list_tdm_colls[[i]]) <- colnames_colls
 }
+
+if(length(character_catch > 0)){
+      print("Elements where the keyword did not appear in the original document were removed")}
 
 return(list_tdm_colls)
 
