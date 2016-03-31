@@ -3,6 +3,7 @@
 #' Takes a tm corpus and a KWIC matrix as inputs, returns a list of matrices containing observed/expected ratios for each word in the KWIC matrix
 #' @param origcorpus A collocation matrix
 #' @param tidy Tidy the corpus - remove punctuation, numbers, empty lines (optional) and whitespace, convert to lowercase
+#' @param threshold Remove low frequency words (default = 3)
 #' @keywords collocates concordance observed/expected
 #' @export
 #' @examples
@@ -11,7 +12,7 @@
 #' oil_kwic <- collocate(crude,"oil", collocation_width = 6, tidy = TRUE)
 #' observed_expected(crude, oil_kwic)
 
-observed_expected <- function(origcorpus, collocates, tidy = FALSE){
+observed_expected <- function(origcorpus, collocates, tidy = TRUE, threshold = 3){
 
 ###########################
       # Tests
@@ -84,6 +85,18 @@ observed_expected <- function(origcorpus, collocates, tidy = FALSE){
 
       list_tdm_colls <- lapply(list_tdm_colls, function(x) as.matrix(remove_zeros(x)))
 
+      
+# A function to remove low frequency words (default 3)
+      
+      if(threshold > 0){
+      remove_threshold <- function(list_element){
+            lowerthreshold <- which(list_element <= threshold)
+            list_element2 <- list_element[-lowerthreshold,]
+            return(list_element2)
+      }}
+      
+      list_tdm_colls <- lapply(list_tdm_colls, function(x) as.matrix(remove_threshold(x)))
+      
 # Cbind to add percentages for the collocates and rownames as a column
       #list_tdm_colls <- lapply(list_tdm_colls, function(x) cbind(x, apply(x, 1, function(y) y/colSums(x)*100)))
       list_tdm_colls <- lapply(list_tdm_colls, function(x) (cbind(rownames(x), x)))

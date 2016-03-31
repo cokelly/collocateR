@@ -4,12 +4,14 @@
 \alias{observed_expected}
 \title{A observed/expected word frequency function}
 \usage{
-observed_expected(origcorpus, collocates, tidy = FALSE)
+observed_expected(origcorpus, collocates, tidy = TRUE, threshold = 3)
 }
 \arguments{
 \item{origcorpus}{A collocation matrix}
 
 \item{tidy}{Tidy the corpus - remove punctuation, numbers, empty lines (optional) and whitespace, convert to lowercase}
+
+\item{threshold}{Remove low frequency words (default = 3)}
 }
 \description{
 Takes a tm corpus and a KWIC matrix as inputs, returns a list of matrices containing observed/expected ratios for each word in the KWIC matrix
