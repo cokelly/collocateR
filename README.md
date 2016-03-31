@@ -68,7 +68,7 @@ This is an early draft: statistical significance tests, largely drawn from Barnb
 <b id="f1">1</b> Ingo Feinerer, Kurt Hornik, and David Meyer (2008). Text Mining Infrastructure in R. _Journal of
   Statistical Software_ 25(5): 1-54. URL: http://www.jstatsoft.org/v25/i05/  [↩](#a1)
 
- <b id="f2">2</b>Barnbrook Geoff and others, _Collocation: Applications and Implications_ (Palgrave Macmillan 2013). [↩](#a2)
+ <b id="f2">2</b> Barnbrook Geoff and others, _Collocation: Applications and Implications_ (Palgrave Macmillan 2013). [↩](#a2)
 
 
 <!-- footnote ends -->
