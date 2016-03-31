@@ -1,18 +1,18 @@
-#' A observed/expected word frequency function, operationalising calculations contained in Barnbrook Geoff and others, Collocation: Applications and Implications (Palgrave Macmillan 2013), Chapter 3.
+#' A z-score word frequency function, operationalising calculations contained in Barnbrook Geoff and others, Collocation: Applications and Implications (Palgrave Macmillan 2013), Chapter 3.
 #'
 #' Takes a tm corpus and a KWIC matrix as inputs, returns a list of matrices containing observed/expected ratios for each word in the KWIC matrix
 #' @param origcorpus A collocation matrix
 #' @param tidy Tidy the corpus - remove punctuation, numbers, empty lines (optional) and whitespace, convert to lowercase
 #' @param threshold Remove low frequency words (default = 3)
-#' @keywords collocates concordance observed/expected
+#' @keywords collocates concordance z-score
 #' @export
 #' @examples
 #' library(tm)
 #' data("crude")
 #' oil_kwic <- kwic(crude,"oil", collocation_width = 6, tidy = TRUE)
-#' significance(crude, oil_kwic)
+#' z_score(crude, oil_kwic)
 
-significance <- function(origcorpus, collocates, tidy = TRUE, threshold = 3){
+z_score <- function(origcorpus, collocates, tidy = TRUE, threshold = 3){
 
       require(tm)
 # Remove any collocates where the kwic was absent (and so the function returned a character vector saying that "The keyword does not appear in this document")
@@ -85,7 +85,7 @@ significance <- function(origcorpus, collocates, tidy = TRUE, threshold = 3){
       list_tdm_colls <- lapply(seq_len(ncol(tdm_colls)), function(x) as.matrix(tdm_colls[,x]))
       names(list_tdm_colls) <- names_colls
 
-# A function to remove zero score list elements
+# A function to remove zero scores from the list elements
       remove_zeros <- function(list_element){
             nonzeros <- which(list_element != 0)
             list_element2 <- list_element[nonzeros,]
@@ -124,7 +124,9 @@ matches_across <- lapply(list_tdm_colls, function(x) find_matches(x))
 list_matches_across <- lapply(seq_along(1:length(matches_across)), function(x) as.matrix(matches_across[[x]][,x])) # So for instance I want column 1 from list element 1 and so on.
 
 # To calculate expected freq, divide each word frequency by the overall wordcount then multipy by kwic matrix wordcount
-list_matches_across <- lapply(seq_along(1:length(list_matches_across)), function(x) cbind(list_matches_across[[x]], (list_matches_across[[x]]/wordcounts_orig[x])*wordcount_colls[x]))
+list_matches_across <- lapply(seq_along(1:length(list_matches_across)), function(x) cbind(list_matches_across[[x]], (list_matches_across[[x]]/wordcounts_orig[x])*(wordcount_colls[x]/wordcounts_orig[x])))
+
+p <- lapply(seq_along(1:length(list_matches_across)), function(x) (list_matches_across[[x]]/wordcounts_orig[x]*(wordcount_colls[x]/)
 
 ###########################
       # Cbind the full occurrences with expected freq
