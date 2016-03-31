@@ -1,6 +1,6 @@
-#' A collocation function
+#' A keywords in context function
 #'
-#' Takes a tm corpus as input, returns a list of matrices containing collocates as output.
+#' Takes a tm corpus as input, returns a list of matrices containing Keywords in Context as output.
 #' @param corpus A tm corpus
 #' @param keyword The keyword that you wish to find collocates for
 #' @param collocation_width The number of neighbouring words on each side
@@ -11,10 +11,10 @@
 #' @examples
 #' library(tm)
 #' data("crude")
-#' collocate(crude,"oil", collocation_width = 6, tidy = TRUE)
+#' kwic(crude,"oil", collocation_width = 6, tidy = TRUE)
 
 
-collocate <- function(corpus, keyword, collocation_width = 4, tidy = TRUE) {
+kwic <- function(corpus, keyword, collocation_width = 4, tidy = TRUE) {
     require(tm)
     if (tidy == TRUE) {
         corpus <- tidy(corpus)
