@@ -3,3 +3,4 @@
 export(kwic)
 export(significance)
 export(tidy)
+export(z_score)

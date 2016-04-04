@@ -15,14 +15,14 @@
 z_score <- function(origcorpus, collocates, tidy = TRUE, threshold = 3){
 
       require(tm)
-# Remove any collocates where the kwic was absent (and so the function returned a character vector saying that "The keyword does not appear in this document")
-      
+# Remove any collocates where the kwic was absent (so where the kwic function returned a character vector saying that "The keyword does not appear in this document")
+
       character_catch <- which(lapply(collocates, class) == "character")
       if(length(character_catch > 0)){
       collocates <- collocates[-character_catch]
       origcorpus <- origcorpus[-character_catch]
       }
-      
+
 ###########################
       # Tests
 ###########################
@@ -95,12 +95,12 @@ z_score <- function(origcorpus, collocates, tidy = TRUE, threshold = 3){
 
       list_tdm_colls <- lapply(list_tdm_colls, function(x) as.matrix(remove_zeros(x)))
 
-      
-      
-# Remove any list elements that contain no words above the threshold
-      
 
-      
+
+# Remove any list elements that contain no words above the threshold
+
+
+
 # Cbind to add rownames as a column
       list_tdm_colls <- lapply(list_tdm_colls, function(x) (cbind(rownames(x), x)))
 
@@ -126,7 +126,9 @@ list_matches_across <- lapply(seq_along(1:length(matches_across)), function(x) a
 # To calculate expected freq, divide each word frequency by the overall wordcount then multipy by kwic matrix wordcount
 list_matches_across <- lapply(seq_along(1:length(list_matches_across)), function(x) cbind(list_matches_across[[x]], (list_matches_across[[x]]/wordcounts_orig[x])*(wordcount_colls[x]/wordcounts_orig[x])))
 
-p <- lapply(seq_along(1:length(list_matches_across)), function(x) (list_matches_across[[x]]/wordcounts_orig[x]*(wordcount_colls[x]/)
+###### THE BELOW NEEDS TO BE REWRITTEN
+
+#p <- lapply(seq_along(1:length(list_matches_across)), function(x) (list_matches_across[[x]]/wordcounts_orig[x]*(wordcount_colls[x]/)))
 
 ###########################
       # Cbind the full occurrences with expected freq
