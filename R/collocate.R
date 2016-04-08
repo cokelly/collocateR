@@ -6,6 +6,7 @@
 #' @param collocation_width The number of neighbouring words on each side
 #' @param tidy Tidy the corpus - remove punctuation, numbers, empty lines (optional) and whitespace, convert to lowercase
 #' @param remove_empty_lines Remove empty lines from the corpus (default: TRUE)
+#' @import tm
 #' @keywords collocates concordance
 #' @export
 #' @examples
@@ -16,7 +17,8 @@
 
 kwic <- function(corpus, keyword, collocation_width = 4, tidy = TRUE) {
 
-      require(tm)
+      # Get corpus names for use later
+      cnames <- names(corpus)
       # Run tidy function
       if (tidy == TRUE) {
             corpus <- tidy(corpus)
@@ -29,14 +31,13 @@ kwic <- function(corpus, keyword, collocation_width = 4, tidy = TRUE) {
 vectors <- sapply(corpus, "content")
       # split the vectors so that I can locate any specific keyword
 vectors <- sapply(vectors, function(x) strsplit(x, split = " "))
-      vector_names <- names(vectors)
       # Isolate if any words come within a collocation width of the text
       # beginnings or ends returns a list of lists including keyword locations,
       # plus a list of 'early' and 'late' words (and a matrix)
 
       #################################
 
-      collocations_calc <- function(input_vector, ...) {
+      collocations_calc <- function(input_vector, vector_names, ...) {
             doc_length <- length(input_vector)
             keyword_locations <- which(input_vector == keyword)
             #################################
@@ -163,7 +164,7 @@ vectors <- sapply(vectors, function(x) strsplit(x, split = " "))
       }
       #################################
       collocates <- lapply(vectors, function(x) collocations_calc(x))  # apply the function
-      names(collocates) <- vector_names
+      names(collocates) <- cnames
       #################################
       return(collocates)
 }

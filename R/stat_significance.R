@@ -4,6 +4,7 @@
 #' @param origcorpus A collocation matrix
 #' @param tidy Tidy the corpus - remove punctuation, numbers, empty lines (optional) and whitespace, convert to lowercase
 #' @param threshold Remove low frequency words (default = 3)
+#' @import tm
 #' @keywords collocates concordance observed/expected
 #' @export
 #' @examples
@@ -14,15 +15,17 @@
 
 significance <- function(origcorpus, collocates, tidy = TRUE, threshold = 3){
 
-      require(tm)
-# Remove any collocates where the kwic was absent (and so the function returned a character vector saying that "The keyword does not appear in this document")
+      # Get the original corpus documents' names for use later
+      corpus_names <- names(origcorpus)
       
+# Remove any collocates where the kwic was absent (and so the function returned a character vector saying that "The keyword does not appear in this document")
+
       character_catch <- which(lapply(collocates, class) == "character")
       if(length(character_catch > 0)){
       collocates <- collocates[-character_catch]
       origcorpus <- origcorpus[-character_catch]
       }
-      
+
 ###########################
       # Tests
 ###########################
@@ -61,7 +64,7 @@ significance <- function(origcorpus, collocates, tidy = TRUE, threshold = 3){
       if(tidy == TRUE){
             origcorpus <- tidy(origcorpus)
       }
-
+      
 ###########################
       # Get a tdm for the original corpus
 ###########################
@@ -73,7 +76,7 @@ significance <- function(origcorpus, collocates, tidy = TRUE, threshold = 3){
 ###########################
 
       corpus_collocates <- Corpus(VectorSource(collocates), readerControl = list(language = "en"))
-      names_colls <- names(collocates)
+      #names_colls <- names(collocates)
       tdm_colls <- as.matrix(TermDocumentMatrix(corpus_collocates))
       wordcount_colls <- colSums(tdm_colls)
 
@@ -95,12 +98,12 @@ significance <- function(origcorpus, collocates, tidy = TRUE, threshold = 3){
 
       list_tdm_colls <- lapply(list_tdm_colls, function(x) as.matrix(remove_zeros(x)))
 
-      
-      
-# Remove any list elements that contain no words above the threshold
-      
 
-      
+
+# Remove any list elements that contain no words above the threshold
+
+
+
 # Cbind to add rownames as a column
       list_tdm_colls <- lapply(list_tdm_colls, function(x) (cbind(rownames(x), x)))
 
@@ -158,7 +161,7 @@ list_tdm_colls <- lapply(list_tdm_colls, function(x) if(nrow(x) > 1){x[order(as.
 # Assign colnames, sadly through a for loop
 
 for(i in 1:length(list_tdm_colls)){
-      colnames_colls <- c(paste(names_colls[i], keyword2, "collocates", sep="_"), "count", "observed-expected ratio")
+      colnames_colls <- c(paste(corpus_names[i], keyword2, "collocates", sep="_"), "count", "observed-expected ratio")
       colnames(list_tdm_colls[[i]]) <- colnames_colls
 }
 

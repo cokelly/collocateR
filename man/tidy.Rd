@@ -4,10 +4,10 @@
 \alias{tidy}
 \title{Uses tm to tidy a corpus}
 \usage{
-tidy(corpus_raw)
+tidy(corpus)
 }
 \arguments{
-\item{corpus_raw}{A corpus that has not been processed}
+\item{corpus}{A corpus that has not been processed}
 }
 \description{
 Addresses words that are less than a collocation_width away from the document's end
