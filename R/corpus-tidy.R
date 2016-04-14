@@ -9,6 +9,8 @@
 
 tidy <- function(corpus){
       
+      corpusnames <- names(corpus)
+      
       vectors <- sapply(corpus, "content")
       
       vectors <- lapply(vectors, function(x) as.matrix(unlist(strsplit(x, " "))))
@@ -17,7 +19,7 @@ tidy <- function(corpus){
       vectors <- lapply(vectors, function(x) as.matrix(tolower(x)))
       
       # Remove all punctuation
-      vectors <- lapply(vectors, function(x) str_replace_all(x,"[[:punct:]]",""))
+      vectors <- lapply(vectors, function(x) str_replace_all(x, "[^[:alpha:]]", ""))
       
       remove_empty_lines <- function(vector){
             vector <- as.matrix(vector)
@@ -33,6 +35,8 @@ tidy <- function(corpus){
       vectors <- lapply(vectors, function(x) paste(x, sep = "", collapse = " "))
       
       corpus_new <- Corpus(VectorSource(vectors), readerControl = list(language = "en"))
+      
+      names(corpus_new) <- corpusnames
       
       return(corpus_new)
 }
