@@ -4,7 +4,7 @@
 \alias{kwic}
 \title{A keywords in context function}
 \usage{
-kwic(corpus, keyword, collocation_width = 4, tidy = TRUE)
+kwic(corpus, keyword, collocation_width = 4, tidy = FALSE, exact = TRUE)
 }
 \arguments{
 \item{corpus}{A tm corpus}
@@ -13,9 +13,9 @@ kwic(corpus, keyword, collocation_width = 4, tidy = TRUE)
 
 \item{collocation_width}{The number of neighbouring words on each side}
 
-\item{tidy}{Tidy the corpus - remove punctuation, numbers, empty lines (optional) and whitespace, convert to lowercase}
+\item{tidy}{Tidy the corpus - remove punctuation, numbers, empty lines and whitespace, convert to lowercase}
 
-\item{remove_empty_lines}{Remove empty lines from the corpus (default: TRUE)}
+\item{exact}{FALSE to use 'grep' to find all words containg your keyword phrase or TRUE to use 'which' to find the exact keyword (default: TRUE (is much faster))}
 }
 \description{
 Takes a tm corpus as input, returns a list of matrices containing Keywords in Context as output.
