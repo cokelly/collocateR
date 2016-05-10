@@ -9,9 +9,9 @@
 #' @keywords ggplot dispersion plot
 #' @export
 #' @examples
-#' test <- faceted_dispersion_plot(csr2, "risk", years, plottitle = "Word locations for 'risk' in BP's CSR Reports 1998-2014")
+#' test <- plot_dispersions(csr2, "risk", years, plottitle = "Word locations for 'risk' in BP's CSR Reports 1998-2014")
 
-faceted_dispersion_plot <- function(vectors, keyword, panel_labels = names(vectors), plottitle = NULL){
+plot_dispersions <- function(vectors, keyword, panel_labels = names(vectors), plottitle = NULL){
       vectors <- as.list(vectors)
       # Dealing with panel names
       #Double if statement Test if there are the right number of panel labels
