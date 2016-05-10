@@ -4,6 +4,7 @@
 #' @param vect A text vector
 #' @param keyword A keyword
 #' @param A vectorname The Vector name or an assigned vectorname
+#' @export
 #' @keywords word locations
 
 word_locations <- function(vect, keyword, vectorname){
@@ -15,12 +16,12 @@ word_locations <- function(vect, keyword, vectorname){
       vect[keyword_locs] <- 1
       vect[not_keyword_locs] <- 0
       # Create a vectorname that includes n for words
-      vectorname <- paste(vectorname, "\n", "n = (", length(keyword_locs), ")", sep = "")
+      vectorname2 <- paste(vectorname, " (n = ", length(keyword_locs), ")", sep = "")
       #Turn into a data frame
       vect <- as.integer(vect)
       positions <- seq_along(1:length(vect))
-      vect.df <- data.frame(cbind(rep(vectorname, length(vect)), positions, vect), stringsAsFactors = FALSE)
-      colnames(vect.df) <- c("file", "word", "matchwords")
+      vect.df <- data.frame(cbind(rep(vectorname2, length(vect)), positions, vect, vectorname), stringsAsFactors = FALSE)
+      colnames(vect.df) <- c("file", "word", "matchwords", "origfilename")
       
       return(vect.df)
 }
