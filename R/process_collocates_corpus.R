@@ -3,19 +3,12 @@
 #' @param vector A vector of text files
 #' @param keyword A keyword to feed to the kwic vector
 #' @param window The width of the kwic vector
-#' @importFrom qdapRegex rm_white
-#' @importFrom quanteda corpus kwic dfm tfidf
+#' @importFrom quanteda tfidf dfm
 #' @keywords tidy
 #' @export
 
 kwic_scores <- function(corpus, keywords, window = 5){
-      # generate the kwic file then process back into a quanteda corpus
-      kwicfile <- kwic(corpus, keywords, window)
-      collocates <- kwicfile[,c(3,5)]
-      collocates <- lapply(seq_along(1:nrow(kwicfile)), function(x) paste(collocates[x,], sep = "", collapse = " "))
-      collocates <- lapply(collocates, rm_white)
-      collocates <- unlist(collocates)
-      collocates <- corpus(collocates)
+      collocates <- kwic_to_corpus(corpus, keywords, window)
       # create a dfm sparse matrix
       collocates.dfm <- dfm(collocates)
       collocates.tfidf <- tfidf(collocates.dfm)
