@@ -4,7 +4,8 @@
 \alias{pmi_score}
 \title{Calculates a pointwise mutual information score for ngrams in a corpus: log2(prob(xy)/prob(x)prob(y))}
 \usage{
-pmi_score(vect, keyword, window = 5, ngram = 1:4, cutoff = 3)
+pmi_score(vect, keyword, window = 5, ngram = 1:4, cutoff = 3,
+  parallel = TRUE)
 }
 \arguments{
 \item{vect}{A vector of text files or a corpus}
@@ -16,6 +17,8 @@ pmi_score(vect, keyword, window = 5, ngram = 1:4, cutoff = 3)
 \item{ngram}{The ngram types}
 
 \item{cutoff}{A floor for infrequent terms}
+
+\item{parallel}{TOkenize using parallel package}
 }
 \description{
 Calculates a pointwise mutual information score for ngrams in a corpus: log2(prob(xy)/prob(x)prob(y))
