@@ -17,6 +17,9 @@ vectors <- lapply(vectors, function(x) str_replace_all(x, "\n", " "))
 print("to lower...")
 vectors <- lapply(vectors, function(x) as.matrix(tolower(x)))
 
+# Retain only alphanumeric
+vectors <- lapply(vectors, function(x) gsub("[^A-Za-z ]", "", x))
+
  # Remove all punctuation
 print("removing punctuation...")
 vectors <- lapply(vectors, function(x) str_replace_all(x,"[[:punct:]]",""))
