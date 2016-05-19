@@ -18,7 +18,7 @@ pmi_score <- function(vect, keyword, window = 5, ngram = 1, cutoff = 3){
             dfm(input, removeNumbers = TRUE, removePunct = TRUE, removeSeparators = TRUE, verbose = TRUE, removeTwitter = TRUE, ngrams = ngram, concatenator = " ")
       }
       print("Processing the corpus: this might take a long time")
-            vect_phrases1 <- make_dfm(vect, ngram)
+            vect_phrases <- make_dfm(vect, ngram)
       # Create a data table with ngram frequency for each phrase
             vect_sums <- colSums(vect_phrases)
             vectdf <- data.table(phrase = names(vect_sums), corpus_freq = vect_sums)
