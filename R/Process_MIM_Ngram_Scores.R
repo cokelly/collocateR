@@ -39,6 +39,9 @@ pmi_score <- function(vect, keyword, window = 5, ngram = 1, cutoff = 3){
       setkey(vectdf, phrase)
       # Create a similar dataframe for the collocations so I can narrow to relevant words and phrases
       print("Generating scores for the keyword in context terms")
+      #############
+      #THE PROBLEM IS IN THE FUNCTION BELOW. IN COMBINING INTO SINGLE VECTORS I AM INTRODUCING BIGRAMS THAT DON'T EXIST. CHOICES: MANUALLY REMOVE LATER OR REWRITE THE FUNCTION
+      ############
       generate_kwics <- function(vect, keyword, window){
             if(length(vect == 1)){
                   vect <- unlist(strsplit(vect, " "))
@@ -55,9 +58,12 @@ pmi_score <- function(vect, keyword, window = 5, ngram = 1, cutoff = 3){
             ranges <- unique(unlist(ranges_list))
             #Isolate the words
             kwic_collocates <- vect[ranges]
+            # Remove blank locates
+            x <- which(kwic_collocates == "")
+            kwic_collocates <- kwic_collocates[-x]
             return(kwic_collocates)
       }
-         kwic_corp0 <- generate_kwics(vect, keyword, window)
+      kwic_corp0 <- generate_kwics(vect, keyword, window)
       kwic_corp <- paste(kwic_corp0, collapse = " ")
       # Tokenize
       kwic_phrases0 <- make_dfm(kwic_corp, ngram)
