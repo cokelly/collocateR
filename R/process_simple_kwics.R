@@ -3,6 +3,7 @@
 #' @param vect0 A vector of text files
 #' @param keyword A keyword to feed to the kwic vector
 #' @param window The width of the kwic vector
+#' @importFrom stringr str_replace_all
 #' @keywords kwic corpus mutual information
 #' @export
 
@@ -35,6 +36,15 @@ simple_kwics <- function(vect0, keyword, window){
   # Restore the first row
   ranges <- rbind(ranges_matrix[1,], ranges_matrix)
   #Isolate the words
-  kwic_collocates <- matrix(vect0[ranges], ncol = ncol(ranges))
-  return(kwic_collocates)
+  kwic_collocates0<- matrix(vect0[ranges], ncol = ncol(ranges))
+  # Create a list of vectors from each row of the matrix
+  kwic_collocates0_list <- lapply(seq_along(1:nrow(kwic_collocates0)), function(x) paste(kwic_collocates0[x,], sep = " ", collapse = " "))
+  # Remove NAs
+  kwic_collocates0_list <- lapply(kwic_collocates0_list, function(x) str_replace_all(x, " NA", ""))
+  kwic_collocates00 <- unlist(kwic_collocates0_list)
+  # Which lines are short of the window + 1?
+  kwic_shorts <- which(sapply(kwic_collocates00, function(x) length(unlist(strsplit(x, " ")))) < ((window*2)+1))
+  kwic_collocates <- sapply(seq_along(length(kwic_shorts):1), function(x) paste(kwic_collocates00[kwic_shorts[x-1]], kwic_collocates00[kwic_shorts[x]], sep = " "))
+  
+    return(kwic_collocates)
 }

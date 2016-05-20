@@ -15,7 +15,9 @@ pmi_score <- function(vect, keyword, window = 5, ngram = 1, cutoff = 3, normalis
   # Make a dfm with ngrams
   
       make_dfm <- function(input, ngram) {
-            dfm(input, removeNumbers = TRUE, removePunct = TRUE, removeSeparators = TRUE, verbose = TRUE, removeTwitter = TRUE, ngrams = ngram, concatenator = " ")
+        input2 <- tokenize(input, removeNumbers = TRUE, removePunct = TRUE, removeSeparators = TRUE, verbose = TRUE, removeTwitter = TRUE, ngrams = ngram, concatenator = " ")
+            input2 <- dfm(input2)
+            return(input2)
       }
       print("Processing the corpus: this might take a long time")
             vect_phrases <- make_dfm(vect, ngram)
@@ -74,9 +76,12 @@ pmi_score <- function(vect, keyword, window = 5, ngram = 1, cutoff = 3, normalis
       # retain the keyword probability
       keyword_probs <- overalldf[which(overalldf$phrase == keyword),]
       # #remove words and phrases that fall below the cutoff
+      if(cutoff > 1){
       floor <- which(overalldf$kwic_freq < cutoff)
       overalldf2 <- overalldf[-floor,]
-      
+      } else {
+        overalldf2 <- overalldf
+      }
       # normalised Mutual information measure = (log(prob(xy)/prob(x)prob(y)))/log(probxy)
       #Calculate prob(xy)
       probxy <- as.numeric(overalldf2$kwic_prob)/as.numeric(keyword_probs$kwic_prob)
@@ -85,6 +90,7 @@ pmi_score <- function(vect, keyword, window = 5, ngram = 1, cutoff = 3, normalis
       probxproby <- doc_probs_abridged*as.numeric(keyword_probs$word_prob)
       #calculate mutual information
       pmi <- log(probxy/probxproby)
+      #pmi <- log(probxy/doc_probs_abridged)
       if(isTRUE(normalised) == TRUE){
             npmi <- pmi/(-(log(probxproby)))
              # Add to df
