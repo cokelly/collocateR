@@ -79,7 +79,7 @@ pmi_score <- function(vect, keyword, window = 5, ngram = 1, cutoff = 3, normalis
       
       # normalised Mutual information measure = (log(prob(xy)/prob(x)prob(y)))/log(probxy)
       #Calculate prob(xy)
-      probxy <- as.numeric(overalldf2$kwic_prob)
+      probxy <- as.numeric(overalldf2$kwic_prob)/as.numeric(keyword_probs$kwic_prob)
       # #Calculate prob(x)prob(y)
       doc_probs_abridged <- as.numeric(overalldf2$word_prob)
       probxproby <- doc_probs_abridged*as.numeric(keyword_probs$word_prob)

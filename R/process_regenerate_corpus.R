@@ -4,7 +4,7 @@
 #' @param keyword A keyword to feed to the kwic vector
 #' @param window The width of the kwic vector
 #' @importFrom qdapRegex rm_white
-#' @importFrom quanteda corpus kwic tfidf
+#' @import quanteda
 #' @keywords kwic corpus
 
 

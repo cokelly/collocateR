@@ -3,7 +3,7 @@
 #' @param vector A vector of text files
 #' @param keyword A keyword to feed to the kwic vector
 #' @param window The width of the kwic vector
-#' @importFrom quanteda tfidf dfm corpus
+#' @import quanteda
 #' @keywords tidy
 #' @export
 
