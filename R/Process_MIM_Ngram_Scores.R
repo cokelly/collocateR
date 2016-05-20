@@ -10,7 +10,7 @@
 #' @keywords kwic corpus mutual information
 #' @export
 
-pmi_score <- function(vect, keyword, window = 5, ngram = 1, cutoff = 3){
+pmi_score <- function(vect, keyword, window = 5, ngram = 1, cutoff = 3, normalised = TRUE){
   
   # Make a dfm with ngrams
   
@@ -42,31 +42,41 @@ pmi_score <- function(vect, keyword, window = 5, ngram = 1, cutoff = 3){
       #############
       #THE PROBLEM IS IN THE FUNCTION BELOW. IN COMBINING INTO SINGLE VECTORS I AM INTRODUCING BIGRAMS THAT DON'T EXIST. CHOICES: MANUALLY REMOVE LATER OR REWRITE THE FUNCTION
       ############
-      generate_kwics <- function(vect, keyword, window){
-            if(length(vect == 1)){
-                  vect <- unlist(strsplit(vect, " "))
+      generate_kwics <- function(vect0, keyword, window){
+            if(length(vect0 == 1)){
+                  vect0 <- unlist(strsplit(vect0, " "))
             }
-            keyword_locs <- which(vect == keyword)
+            # Remove blank locates
+            x <- which(vect0 == "")
+            vect0 <- vect0[-x]
+            # Get the keyword
+            keyword_locs <- which(vect0 == keyword)
             # Get the lower and upper bounds to the window for each instance of the keyword
             lower_bound <- keyword_locs-window
             lower_bound <- ifelse(lower_bound < 1, NA, lower_bound)
             upper_bound <- keyword_locs+window
-            upper_bound <- ifelse(upper_bound > length(vect), NA, upper_bound)
+            upper_bound <- ifelse(upper_bound > length(vect0), NA, upper_bound)
             # create a list of ranges
             ranges_list <- lapply(seq_along(1:length(lower_bound)), function(x) lower_bound[x]:upper_bound[x])
             # Get rid of overlaps
-            ranges <- unique(unlist(ranges_list))
+            ranges_matrix0 <- do.call("rbind", ranges_list)
+            # A function to find dups by comparing each row
+            erase_dups <- function(vector1, vector2){
+                  truefalse_vector <- vector1 %in% vector2
+                  vector1[truefalse_vector == TRUE] <- NA
+                  return(vector1)
+            }
+            # Where are the overlaps?
+            ranges_matrix <- t(sapply(seq_along(1:(nrow(ranges_matrix0)-1)), function(x) erase_dups(ranges_matrix0[x,], ranges_matrix0[x+1,])))
+            # Restore the final row
+            ranges <- rbind(ranges_matrix, ranges_matrix0[max(nrow(ranges_matrix0)),])
             #Isolate the words
-            kwic_collocates <- vect[ranges]
-            # Remove blank locates
-            x <- which(kwic_collocates == "")
-            kwic_collocates <- kwic_collocates[-x]
+            kwic_collocates <- matrix(vect0[ranges], ncol = ncol(ranges))
             return(kwic_collocates)
       }
       kwic_corp0 <- generate_kwics(vect, keyword, window)
-      kwic_corp <- paste(kwic_corp0, collapse = " ")
       # Tokenize
-      kwic_phrases0 <- make_dfm(kwic_corp, ngram)
+      kwic_phrases0 <- make_dfm(kwic_corp0, ngram)
       kwic_phrases0 <- as.matrix(kwic_phrases0)
       # Create data table with frequencies
       kwic_phrases <- colSums(kwic_phrases0)
@@ -90,26 +100,35 @@ pmi_score <- function(vect, keyword, window = 5, ngram = 1, cutoff = 3){
       overalldf0 <- vectdf[.(kwicdf)]
       overalldf <- as.data.table(do.call("cbind", list(overalldf0$phrase_length, overalldf0$phrase, as.numeric(overalldf0$corpus_freq), as.numeric(overalldf0$kwic_freq), as.numeric(overalldf0$word_prob), as.numeric(overalldf0$kwic_prob))))
       colnames(overalldf) <- c("phrase_length", "phrase", "word_freq", "kwic_freq", "word_prob", "kwic_prob")
-      setkey(overalldf, phrase)
-      # Remove any terms with corpus_freq = NA. These arise from the awkward joins in the kwic corpus (where I blended kwic rows into a single vector)
-      kwic_joins <- which(is.na(overalldf$phrase_length))
-      overalldf <- overalldf[-kwic_joins,]
+      # setkey(overalldf, phrase)
+      # I DON'T NEED THIS ANYMORE Remove any terms with corpus_freq = NA. These arise from the awkward joins in the kwic corpus (where I blended kwic rows into a single vector)
+      # kwic_joins <- which(is.na(overalldf$phrase_length))
+      # overalldf <- overalldf[-kwic_joins,]
       # retain the keyword probability
       keyword_probs <- overalldf[which(overalldf$phrase == keyword),]
       # #remove words and phrases that fall below the cutoff
       floor <- which(overalldf$kwic_freq < cutoff)
       overalldf2 <- overalldf[-floor,]
       
-      # Mutual information measure = log2(prob(xy)/prob(x)prob(y))
+      # normalised Mutual information measure = (log(prob(xy)/prob(x)prob(y)))/log(probxy)
       #Calculate prob(xy)
       probxy <- as.numeric(overalldf2$kwic_prob)
       # #Calculate prob(x)prob(y)
       doc_probs_abridged <- as.numeric(overalldf2$word_prob)
       probxproby <- doc_probs_abridged*as.numeric(keyword_probs$word_prob)
       #calculate mutual information
-      pmi <- log2(probxy/probxproby)
-      # # # Add to df
-      overalldf2 <- cbind(overalldf2, pmi)
-      overalldf2 <- overalldf2[order(overalldf2$pmi, overalldf2$kwic_freq, decreasing = TRUE),]
+      pmi <- log(probxy/probxproby)
+      if(isTRUE(normalised) == TRUE){
+            npmi <- pmi/(-(log(probxproby)))
+             # Add to df
+            overalldf2 <- cbind(overalldf2, npmi)
+            overalldf2 <- overalldf2[order(overalldf2$npmi, overalldf2$kwic_freq, decreasing = TRUE),]
+      } else {
+        # Add to df
+        overalldf2 <- cbind(overalldf2, pmi)
+        overalldf2 <- overalldf2[order(overalldf2$pmi, overalldf2$kwic_freq, decreasing = TRUE),]
+      }
+
+      
       return(overalldf2)
 }
