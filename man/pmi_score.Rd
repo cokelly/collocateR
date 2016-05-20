@@ -4,7 +4,8 @@
 \alias{pmi_score}
 \title{Calculates a pointwise mutual information score for ngrams in a corpus: log2(prob(xy)/prob(x)prob(y))}
 \usage{
-pmi_score(vect, keyword, window = 5, ngram = 1, cutoff = 3)
+pmi_score(vect, keyword, window = 5, ngram = 1, cutoff = 3,
+  normalised = TRUE)
 }
 \arguments{
 \item{vect}{A vector of text files or a corpus}
