@@ -39,42 +39,9 @@ pmi_score <- function(vect, keyword, window = 5, ngram = 1, cutoff = 3, normalis
       setkey(vectdf, phrase)
       # Create a similar dataframe for the collocations so I can narrow to relevant words and phrases
       print("Generating scores for the keyword in context terms")
-      #############
-      #THE PROBLEM IS IN THE FUNCTION BELOW. IN COMBINING INTO SINGLE VECTORS I AM INTRODUCING BIGRAMS THAT DON'T EXIST. CHOICES: MANUALLY REMOVE LATER OR REWRITE THE FUNCTION
       ############
-      generate_kwics <- function(vect0, keyword, window){
-            if(length(vect0 == 1)){
-                  vect0 <- unlist(strsplit(vect0, " "))
-            }
-            # Remove blank locates
-            x <- which(vect0 == "")
-            vect0 <- vect0[-x]
-            # Get the keyword
-            keyword_locs <- which(vect0 == keyword)
-            # Get the lower and upper bounds to the window for each instance of the keyword
-            lower_bound <- keyword_locs-window
-            lower_bound <- ifelse(lower_bound < 1, NA, lower_bound)
-            upper_bound <- keyword_locs+window
-            upper_bound <- ifelse(upper_bound > length(vect0), NA, upper_bound)
-            # create a list of ranges
-            ranges_list <- lapply(seq_along(1:length(lower_bound)), function(x) lower_bound[x]:upper_bound[x])
-            # Get rid of overlaps
-            ranges_matrix0 <- do.call("rbind", ranges_list)
-            # A function to find dups by comparing each row
-            erase_dups <- function(vector1, vector2){
-                  truefalse_vector <- vector1 %in% vector2
-                  vector1[truefalse_vector == TRUE] <- NA
-                  return(vector1)
-            }
-            # Where are the overlaps?
-            ranges_matrix <- t(sapply(seq_along(1:(nrow(ranges_matrix0)-1)), function(x) erase_dups(ranges_matrix0[x,], ranges_matrix0[x+1,])))
-            # Restore the final row
-            ranges <- rbind(ranges_matrix, ranges_matrix0[max(nrow(ranges_matrix0)),])
-            #Isolate the words
-            kwic_collocates <- matrix(vect0[ranges], ncol = ncol(ranges))
-            return(kwic_collocates)
-      }
-      kwic_corp0 <- generate_kwics(vect, keyword, window)
+      # Isolate kwics, controlling for overlaps
+      kwic_corp0 <- simple_kwics(vect, keyword, window)
       # Tokenize
       kwic_phrases0 <- make_dfm(kwic_corp0, ngram)
       kwic_phrases0 <- as.matrix(kwic_phrases0)
