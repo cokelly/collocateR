@@ -5,7 +5,7 @@
 #' @param window The width of the kwic vector
 #' @param ngram The ngram types
 #' @param cutoff A floor for infrequent terms
-#' @importFrom quanteda corpus kwic dfm tokenize ngrams
+#' @import quanteda
 #' @import data.table
 #' @keywords kwic corpus mutual information
 #' @export
