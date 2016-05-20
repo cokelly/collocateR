@@ -128,7 +128,11 @@ pmi_score <- function(vect, keyword, window = 5, ngram = 1, cutoff = 3, normalis
         overalldf2 <- cbind(overalldf2, pmi)
         overalldf2 <- overalldf2[order(overalldf2$pmi, overalldf2$kwic_freq, decreasing = TRUE),]
       }
-
+# Tidy up the NAs which are a legacy of how I calculated the kwics. Note the NAs come down here are characters
+      nas <- which(overalldf2$phrase == "NA")
+      if(length(nas != 0)){
+        overalldf2 <- overalldf2[-nas,]
+      }
       
       return(overalldf2)
 }
