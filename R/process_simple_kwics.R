@@ -1,50 +1,67 @@
 #' Calculates a pointwise mutual information score for ngrams in a corpus: log2(prob(xy)/prob(x)prob(y))
 #'
-#' @param vect0 A vector of text files
+#' @param vect A vector of text files
 #' @param keyword A keyword to feed to the kwic vector
 #' @param window The width of the kwic vector
-#' @importFrom stringr str_replace_all
 #' @keywords kwic corpus mutual information
 #' @export
 
-simple_kwics <- function(vect0, keyword, window){
-  if(length(vect0 == 1)){
-    vect0 <- unlist(strsplit(vect0, " "))
-  }
-  # Remove blank locates
-  x <- which(vect0 == "")
-  vect0 <- vect0[-x]
-  # Get the keyword
-  keyword_locs <- which(vect0 == keyword)
-  # Get the lower and upper bounds to the window for each instance of the keyword
-  lower_bound <- keyword_locs-window
-  lower_bound <- ifelse(lower_bound < 1, NA, lower_bound)
-  upper_bound <- keyword_locs+window
-  upper_bound <- ifelse(upper_bound > length(vect0), NA, upper_bound)
-  # create a list of ranges
-  ranges_list <- lapply(seq_along(1:length(lower_bound)), function(x) lower_bound[x]:upper_bound[x])
-  # Get rid of overlaps
-  ranges_matrix0 <- do.call("rbind", ranges_list)
-  # A function to find dups by comparing each row
-  erase_dups <- function(vector1, vector2){
-    truefalse_vector <- vector1 %in% vector2
-    vector1[truefalse_vector == TRUE] <- NA
-    return(vector1)
-  }
-  # Where are the overlaps?
-  ranges_matrix <- t(sapply(seq_along(2:(nrow(ranges_matrix0))), function(x) erase_dups(ranges_matrix0[x,], ranges_matrix0[x+1,])))
-  # Restore the first row
-  ranges <- rbind(ranges_matrix[1,], ranges_matrix)
-  #Isolate the words
-  kwic_collocates0<- matrix(vect0[ranges], ncol = ncol(ranges))
-  # Create a list of vectors from each row of the matrix
-  kwic_collocates0_list <- lapply(seq_along(1:nrow(kwic_collocates0)), function(x) paste(kwic_collocates0[x,], sep = " ", collapse = " "))
-  # Remove NAs
-  kwic_collocates0_list <- lapply(kwic_collocates0_list, function(x) str_replace_all(x, " NA", ""))
-  kwic_collocates00 <- unlist(kwic_collocates0_list)
-  # Which lines are short of the window + 1?
-  kwic_shorts <- which(sapply(kwic_collocates00, function(x) length(unlist(strsplit(x, " ")))) < ((window*2)+1))
-  kwic_collocates <- sapply(seq_along(length(kwic_shorts):1), function(x) paste(kwic_collocates00[kwic_shorts[x-1]], kwic_collocates00[kwic_shorts[x]], sep = " "))
-  
-    return(kwic_collocates)
+simple_kwics <- function(vect, keyword, window){
+      if(length(vect) == 1){
+            vect <- unlist(strsplit(vect, " "))
+            }
+# Remove blank locates
+x <- which(vect == "")
+if(length(x) > 0){
+      vect <- vect[-x]
+}
+# Get the keyword
+keyword_locs <- which(vect == keyword)
+# Return NA if the keyword is not found otherwise continue processing
+if(length(keyword_locs) == 0){
+      sentences_vect <- NA
+      } else {
+            # Get the lower and upper bounds to the window for each instance of the keyword
+            lower_bound <- keyword_locs-window
+            # control for window falling below position 1
+            lower_bound <- ifelse(lower_bound < 1, NA, lower_bound)
+            lower_bound[which(is.na(lower_bound))] <- 1
+            # get upper bound
+            upper_bound <- keyword_locs+window
+            # control for window exceeding wordcount
+            upper_bound <- ifelse(upper_bound > length(vect), NA, upper_bound)
+            upper_bound[which(is.na(upper_bound))] <- length(vect)
+            # create a list of ranges
+            ranges_list <- lapply(seq_along(1:length(lower_bound)), function(x)
+                  lower_bound[x]:upper_bound[x])
+            # Get rid of overlaps
+            # Generate a vector of locations
+            ranges_vector_with_dups <- do.call("c", ranges_list)
+            # Get unique elements
+            ranges_vector <- unique(ranges_vector_with_dups)
+            # Find the points in the vector where elements skip (so one element is more than a single point from the previous)
+            if(length(ranges_list) == 1){
+                  sentences_vect <- vect[ranges_vector]
+            } else {
+            gaps_are_FALSE <- sapply(seq_along(length(ranges_vector):1), function(x) isTRUE(ranges_vector[x] - ranges_vector[x-1] == 1))
+            isfalse <- which(gaps_are_FALSE == FALSE)
+            # Mark these out with a pipe symbol
+            ranges_vector[isfalse] <- paste("|", ranges_vector[isfalse], sep = " ")
+            ranges_vector <- unlist(strsplit(ranges_vector, " "))
+            gaps <- as.numeric(which(ranges_vector == "|"))
+            # Generate a list of 'sentences' as in of sequential locations
+            text_locs_list <- lapply(seq_along(1:(length(gaps)-1)), function(a) ranges_vector[(gaps[a]+1):(gaps[a+1]-1)])
+            # Add the final sentence in the vector.
+            text_locs_list <- c(text_locs_list, ranges_vector[(max(gaps)+1):length(ranges_vector)])
+            # Turn the elements into numeric
+            text_locs_list <- lapply(text_locs_list, as.numeric)
+            # TUrn into a list of text elements
+            text_list <- lapply(seq_along(1:length(text_locs_list)), function(x) vect[text_locs_list[[x]]])
+            # Create sentences
+            sentences_list <- lapply(seq_along(1:length(text_list)), function(a) paste(text_list[[a]], sep=" ", collapse = " "))
+            # Unlist
+            sentences_vect <- unlist(sentences_list)
+            }
+      }
+return(sentences_vect)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/Process_npmi_Ngram_Scores.R
 \name{pmi_score}
 \alias{pmi_score}
-\title{Calculates a pointwise mutual information score for ngrams in a corpus: log2(prob(xy)/prob(x)prob(y))}
+\title{Calculates a pointwise mutual information score for ngrams in a corpus, normalised if requested: log2(prob(xy)/prob(x)prob(y))}
 \usage{
 pmi_score(vect, keyword, window = 5, ngram = 1, cutoff = 3,
   normalised = TRUE)
@@ -19,7 +19,7 @@ pmi_score(vect, keyword, window = 5, ngram = 1, cutoff = 3,
 \item{cutoff}{A floor for infrequent terms}
 }
 \description{
-Calculates a pointwise mutual information score for ngrams in a corpus: log2(prob(xy)/prob(x)prob(y))
+Calculates a pointwise mutual information score for ngrams in a corpus, normalised if requested: log2(prob(xy)/prob(x)prob(y))
 }
 \keyword{corpus}
 \keyword{information}
