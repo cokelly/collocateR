@@ -1,7 +1,7 @@
 #' Removes stopwords from a vector of text files, using quanteda's stopwords
 #'
 #' @param vectors A vector of text files
-#' @import quanteda
+#' @importFrom quanteda stopwords
 #' @keywords tidy
 
 remove_stops <- function(vectors){

@@ -6,7 +6,7 @@
 #' @param remove_stopwords Remove all stopwords. For a list of stopwords input quanteda::stopwords("english")
 #' @param as_corpus return as a quanteda corpus
 #' @importFrom readr read_file
-#' @import quanteda
+#' @importFrom quanteda corpus
 #' @keywords import texts
 #' @export
 #' @examples

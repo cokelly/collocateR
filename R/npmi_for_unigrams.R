@@ -1,4 +1,4 @@
-#' Calculates a pointwise mutual information score for ngrams in a corpus, normalised if requested: log2(prob(xy)/prob(x)prob(y))
+#' Calculates a pointwise mutual information score for ngrams in a corpus, normalised if requested. Can work with multi-grams but is not efficient. Try npmi_multigram instead.
 #'
 #' @param vect A vector of text files or a corpus
 #' @param keyword A keyword to feed to the kwic vector
@@ -15,25 +15,14 @@
 # context window). PMI = log(p(x,y)/p(x)p(y)) For NPMI, divide by p(x)p(y).
 #######################
 #Token the whole corpus
-pmi_score <- function(vect, 
+npmi_unigrams <- function(vect, 
                       keyword,
                       window = 5,
                       ngram = 1,
                       cutoff = 3,
                       normalised = TRUE){
   
-# A function for creating a document frequency matrix (from quanteda)
-make_dfm <- function(input, ngram) {
-      input2 <- tokenize(input, removeNumbers = TRUE,
-                         removePunct = TRUE,
-                         removeSeparators = TRUE,
-                         verbose = TRUE,
-                         removeTwitter = TRUE,
-                         ngrams = ngram,
-                         concatenator = " ")
-      input2 <- dfm(input2)
-      return(input2)
-      }
+
 print("Processing the corpus: this might take a long time")
 # Run the corpus through the function
 vect_phrases <- make_dfm(vect, ngram)

@@ -52,7 +52,8 @@ if(length(keyword_locs) == 0){
             # Generate a list of 'sentences' as in of sequential locations
             text_locs_list <- lapply(seq_along(1:(length(gaps)-1)), function(a) ranges_vector[(gaps[a]+1):(gaps[a+1]-1)])
             # Add the final sentence in the vector.
-            text_locs_list <- c(text_locs_list, ranges_vector[(max(gaps)+1):length(ranges_vector)])
+            final_sentence <- ranges_vector[(max(gaps)+1):length(ranges_vector)]
+            text_locs_list <- c(text_locs_list, list(final_sentence))
             # Turn the elements into numeric
             text_locs_list <- lapply(text_locs_list, as.numeric)
             # TUrn into a list of text elements
