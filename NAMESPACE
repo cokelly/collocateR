@@ -2,6 +2,7 @@
 
 export(kwic_scores)
 export(make_dfm)
+export(npmi_multigrams)
 export(npmi_unigrams)
 export(read_texts)
 export(simple_kwics)

@@ -13,7 +13,7 @@
 
 # A simple function for processing each element and returning a kwic, an ngram and a pmi table
 
-npmi_unigrams <- function(vect, keyword, ngram = 1:2, window = 5, cutoff = 3){
+npmi_multigrams <- function(vect, keyword, ngram = 1:2, window = 5, cutoff = 3){
       # remove carriage returns and hyphens
       vect <- str_replace_all(vect, "[\n]", " ")
 tidy_vect <- unlist(strsplit(vect, " "))
