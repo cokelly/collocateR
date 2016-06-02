@@ -4,7 +4,7 @@
 \alias{simple_kwics}
 \title{Calculates a pointwise mutual information score for ngrams in a corpus: log2(prob(xy)/prob(x)prob(y))}
 \usage{
-simple_kwics(vect, keyword, window)
+simple_kwics(vect, keyword, window, stem = FALSE)
 }
 \arguments{
 \item{vect}{A vector of text files}

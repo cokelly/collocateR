@@ -6,7 +6,20 @@
 #' @keywords kwic corpus mutual information
 #' @export
 
-simple_kwics <- function(vect, keyword, window){
+simple_kwics <- function(vect, keyword, window, stem = FALSE){
+      if(stem == TRUE){
+            print("Stemming....")
+            vect0 <- unlist(strsplit(vect, " "))
+            vect <- wordstem(tokenize(vect0))
+            x <- which(vect == "character(0)")
+            if(length(x) > 0){
+                  vect <- vect[-x]
+            }
+            vect <- paste(vect, sep = " ", collapse = " ")
+            keyword <- wordstem(tokenize(keyword))
+            keyword <- as.character(keyword)
+            print("...done")
+      }
       if(length(vect) == 1){
             vect <- unlist(strsplit(vect, " "))
             }
@@ -16,6 +29,7 @@ if(length(x) > 0){
       vect <- vect[-x]
 }
 # Get the keyword
+print("Processing kwics...")
 keyword_locs <- which(vect == keyword)
 # Return NA if the keyword is not found otherwise continue processing
 if(length(keyword_locs) == 0){
