@@ -26,7 +26,7 @@ npmi_multigrams <- function(vect, keyword, ngram = 1:2, window = 5, cutoff = 3, 
             vect <- paste(vect, sep = " ", collapse = " ")
             keyword <- wordstem(tokenize(keyword))
       }
-      test1 <- grep(keyword, vect)
+      test1 <- which(unlist(strsplit(vect, " ")) == keyword)
       if((length(test1) == 0) == TRUE){
             counts <- "No keyword was found"
       } else {
