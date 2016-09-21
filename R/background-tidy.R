@@ -22,7 +22,7 @@ vectors <- lapply(vectors, function(x) gsub("[^A-Za-z ]", "", x))
 
  # Remove all punctuation
 print("removing punctuation...")
-vectors <- lapply(vectors, function(x) str_replace_all(x,"[[:punct:]]",""))
+vectors <- lapply(vectors, function(x) str_replace_all(x,"[[:punct:]]"," "))
 
 print("removing empty lines...")
 remove_empty_lines <- function(vector){
