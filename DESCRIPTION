@@ -1,6 +1,6 @@
 Package: collocateR
 Title: Functions associated with a corporate governance text mining project.
-Version: 0.0.0.90.1
+Version: 0.1
 Published: 2016-04-25
 Authors@R: person("Ciarán", "O'Kelly", email = "okelly.ciaran@gmail.com", role = c("aut", "cre"))
 Description: Functions associated with a corporate governance text mining

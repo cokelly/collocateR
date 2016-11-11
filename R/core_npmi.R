@@ -15,7 +15,7 @@
 
 # A simple function for processing each element and returning a kwic, an ngram and a pmi table
 
-npmi_multigrams <- function(vect, keyword, ngram = 1:2, window = 5, cutoff = 3, stem = FALSE, cached_tokens = NULL){
+npmi <- function(vect, keyword, ngram = 1:2, window = 5, cutoff = 3, stem = FALSE, cached_tokens = NULL){
       if(stem == TRUE){
             vect0 <- unlist(strsplit(vect, " "))
             vect <- wordstem(tokenize(vect0))
