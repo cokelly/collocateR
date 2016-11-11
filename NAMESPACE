@@ -2,12 +2,10 @@
 
 export(kwic_scores)
 export(make_dfm)
-export(npmi_multigrams)
-export(npmi_unigrams)
+export(npmi)
 export(read_texts)
 export(simple_kwics)
 import(data.table)
-import(quanteda)
 importFrom(quanteda,corpus)
 importFrom(quanteda,dfm)
 importFrom(quanteda,stopwords)
