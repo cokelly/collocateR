@@ -1,0 +1,18 @@
+Package: collocateR (deprecated alpha)
+Title: Functions associated with a corporate governance text mining project.
+Version: 0.1
+Published: 2016-11-11
+Authors@R: person("Ciarán", "O'Kelly", email = "okelly.ciaran@gmail.com", role = c("aut", "cre"))
+Description: Functions associated with a corporate governance text mining
+    project. The aim is to compare the use of human rights language in a sequence of
+    corporate social responsibility texts.
+Depends:
+    R (>= 3.3)
+License: GPL-3
+LazyData: true
+Imports:
+    quanteda,
+    stringr,
+    readr
+RoxygenNote: 5.0.1
+Date: 2016
