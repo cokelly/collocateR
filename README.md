@@ -5,7 +5,7 @@ Albeit imperfectly, the package increasingly uses functions and workflows from t
 
 ## Purpose
 
-CollocateR serves a simple purpose. It processes collocates for keywords in context in text files and calculates significance for them, based on tests set out in Barnbrook et al's [_Collocation: Applications and Implications_](https://www.palgrave.com/gb/book/9781403946126), Palgrave 2013, and formulae explained in the [British National Corpus](http://rdues.bcu.ac.uk/bncweb/manual/bncwebman-collocation.htm) home.
+CollocateR serves a simple purpose. It processes collocates for keywords in context in text files and calculates significance for them, based on tests set out in Barnbrook et al's [_Collocation: Applications and Implications_](https://www.palgrave.com/gb/book/9781403946126), Palgrave 2013, and formulae explained in the [British National Corpus](http://rdues.bcu.ac.uk/bncweb/manual/bncwebman-collocation.htm).
 
 ## Functions
 
