@@ -1,5 +1,5 @@
 # CollocateR
-
+(This branch is deprecated)
 CollocateR is a package containing scripts associated with a corporate report text mining project. The script relies in large part on the Quanteda package,<sup id="a1">[1](#f1)</sup>
 
 <!-- footnote -->

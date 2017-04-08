@@ -1,5 +1,5 @@
 Package: collocateR
-Title: Functions associated with a corporate governance text mining project.
+Title: (Deprecated alpha branch) Functions associated with a corporate governance text mining project.
 Version: 0.1
 Published: 2016-11-11
 Authors@R: person("Ciarán", "O'Kelly", email = "okelly.ciaran@gmail.com", role = c("aut", "cre"))
