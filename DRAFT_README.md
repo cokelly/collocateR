@@ -20,3 +20,7 @@ CollocateR serves a simple purpose. It processes collocates for keywords in cont
 - observed_expected
 - log_log
 - log_likelihood
+
+### Acknowledgement
+
+README generated with [readme2tex](https://github.com/leegao/readme2tex).
