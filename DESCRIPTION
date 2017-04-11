@@ -1,6 +1,6 @@
-Package: collocateR
+Package: collocateR2
 Title: Processe collocates for keywords in context and calculate collocate significance 
-Version: 0.1
+Version: 0.1.1
 Authors@R: person("Ciarán", "O'Kelly", email = "okelly.ciaran@gmail.com", role = c("aut", "cre"))
 Description: CollocateR serves a simple purpose. It processes collocates for keywords in context in text files and calculates significance for them, based on tests set out in Barnbrook et al's Collocation: Applications and Implications, Palgrave 2013, and formulae explained in the British National Corpus home.
 Depends: R (>= 3.3.3)
@@ -8,3 +8,9 @@ License: GPLv3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1.9000
+Collate: 
+    'CollDB.R'
+    'count_collocates.R'
+    'pmi.R'
+    'save_collocates.R'
+    'npmi.R'

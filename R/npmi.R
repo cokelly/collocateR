@@ -1,4 +1,4 @@
-#' pointwise mutual information: a significance test for keywords in context
+#' normalised pointwise mutual information: a significance test for keywords in context, normalised between 1 and -1
 #' 
 #' @param document A collDB, produced through save_collocates, or a text file
 #' @param floor Collocates that occur fewer times than floor will be removed
@@ -7,11 +7,11 @@
 #' @param remove_stops OPTIONAL If TRUE, stopwords are removed (stopwords derived from tidytext package). Not required if importing a collDB from save_collocates
 #' @param remove_numerals OPTIONAL If TRUE, numerals are removed. Not required if importing a collDB from save_collocates
 #' @param remove_punct OPTIONAL If TRUE, puntuation is removed. Not required if importing a collDB from save_collocates
-#' @include CollDB.R count_collocates.R
+#' @include CollDB.R save_collocates.R pmi.R
 #' @import tibble dplyr
 #' @keywords mutual information, collocates, kwic
 #' @export
-pmi <- function(document, floor = 3, window, node, remove_stops = TRUE, remove_numerals = TRUE, remove_punct = TRUE){
+npmi <- function(document, floor = 3, window, node, remove_stops = TRUE, remove_numerals = TRUE, remove_punct = TRUE){
       # Test to see if the document is a collDB class
       # That is, that it has already gone through save_collocates
       if(class(document) != "collDB"){
@@ -21,30 +21,10 @@ pmi <- function(document, floor = 3, window, node, remove_stops = TRUE, remove_n
                                    remove_stops = remove_stops)
       } else {doc <- document}
       
-      # Count the collocates
+      pmi <- pmi(document, floor = 3, window, node, remove_stops = TRUE)
       
-      coll_counts <- count_collocates(doc)
-      
-      coll_counts <- filter(coll_counts, coll_count > floor)
-      
-      # Count all relevant words in the whole document
-      # Note, for efficiency sake I only count the words that are in the collocate window
-      all_words_counts <- filter(doc$doc_table, word %in% coll_counts$word) %>% 
-            table(.) %>%
-            tibble(word = names(.), all_count = .)
-      
-      counts <- left_join(coll_counts, all_words_counts, by = "word")
-      
-      # Calculate the PMI
-      # Calculate pmi
-      
-      pmi <- tibble(phrase = coll_counts$word, 
-            collocate_freqs = coll_counts$coll_count, 
-            doc_freqs = all_words_counts$all_count,
-            probx = doc$node_recurrence/nrow(doc$doc_table),
-            proby = doc_freqs/nrow(doc$doc_table),
-            probxy = collocate_freqs/nrow(doc$doc_table),
-            pmi = log(probxy/(probx*proby)))
-      
-      return(pmi)
+      npmi <- bind_rows(pmi,
+                        npmi = pmi/-log(probxy))
+
+return(npmi)
 }

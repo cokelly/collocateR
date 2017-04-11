@@ -1,8 +1,10 @@
 #' a class containing a list of collocate information, derived from the 'save_collocates' function
-#' 
-#' @exportClass 
-#' 
-#' 
+#' @import tibble
+#' @exportClass collDB
+ 
+
+collDB <- setOldClass(c("tbl_df", "tbl", "data.frame"))
+
 collDB <- setClass("collDB", 
                    slots = c(left_locs = "list", 
                              right_locs = "list", 

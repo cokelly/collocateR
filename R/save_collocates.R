@@ -4,13 +4,17 @@
 #' @param window The size of the collocate window on each side of tne node
 #' @param node A key word or phrase
 #' @param remove_stops If TRUE, stopwords are removed (stopwords derived from tidytext package)
-#' @import tidyverse tidytext
+#' @param remove_numerals If TRUE, numerals are removed
+#' @param remove_punct If TRUE, puntuation is removed
+#' @import tibble dplyr
+#' @importFrom tidytext unnest_tokens stop_words
 #' @importFrom digest sha1
 #' @importFrom stringr str_replace_all
 #' @importFrom digest sha1
 #' @keywords collocates kwic
+#' @export
 
-save_collocates <- function(document, window, node, remove_stops = TRUE, remove_numerals = TRUE){
+save_collocates <- function(document, window, node, remove_stops = TRUE, remove_numerals = TRUE, remove_punct = TRUE){
       node_length <- length(unlist(strsplit(node, " ")))
       # Test to see if the node phrase is larger than the window
       if(node_length > ((window*2)+1)){ # longer than twice the window plus the keyword
@@ -19,6 +23,9 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
       # Remove numerals
       if(remove_numerals == TRUE){
             document <- str_replace_all(document, "[0-9]", "")      
+      }
+      if(remove_punct == TRUE){
+            document <- str_replace_all(document, "[^[:alnum:],]", "")
       }
       
       document <- tolower(document)
