@@ -6,12 +6,9 @@
 #' @param remove_stops If TRUE, stopwords are removed (stopwords derived from tidytext package)
 #' @param remove_numerals If TRUE, numerals are removed
 #' @param remove_punct If TRUE, puntuation is removed
-#' @import tibble dplyr
-#' @importFrom tidytext unnest_tokens
+#' @import tidyverse tidytext
 #' @importFrom digest sha1
 #' @importFrom stringr str_replace_all
-#' @importFrom digest sha1
-#' @include stop_words.R
 #' @keywords collocates kwic
 #' @export
 
@@ -44,9 +41,10 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
       # If required remove stopwords
       if(remove_stops == TRUE){
             data("stop_words")
-            #word.t <- dplyr::filter(word.t$word, !(. %in% stop_words$word))
-            x <- which(!(word.t %in% stop_words$word))
-            word.t <- word.t[x,]
+            `%notin%` = function(x,y) !(x %in% y)
+            word.t <- word.t %>% dplyr::filter(., word %notin% stops$word)
+            #x <- which(word.t$word %in% stop_words$word)
+            #word.t <- word.t[-x,]
       }
       # Get locations of node
       node_loc <- which(word.t == node1)

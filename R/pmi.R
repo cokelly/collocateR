@@ -39,12 +39,12 @@ pmi <- function(document, floor = 3, window, node, remove_stops = TRUE, remove_n
       # Calculate pmi
       
       pmi <- tibble(phrase = coll_counts$word, 
-            collocate_freqs = coll_counts$coll_count, 
-            doc_freqs = all_words_counts$all_count,
-            probx = doc$node_recurrence/nrow(doc$doc_table),
-            proby = doc_freqs/nrow(doc$doc_table),
-            probxy = collocate_freqs/nrow(doc$doc_table),
-            pmi = log(probxy/(probx*proby)))
+            collocate_freqs = as.numeric(coll_counts$coll_count), 
+            doc_freqs = as.numeric(all_words_counts$all_count),
+            probx = as.numeric(doc$node_recurrence/nrow(doc$doc_table)),
+            proby = as.numeric(doc_freqs/nrow(doc$doc_table)),
+            probxy = as.numeric(collocate_freqs/nrow(doc$doc_table)),
+            pmi = as.numeric(log(probxy/(probx*proby))))
       
       return(pmi)
 }

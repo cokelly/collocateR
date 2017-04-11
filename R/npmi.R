@@ -21,10 +21,9 @@ npmi <- function(document, floor = 3, window, node, remove_stops = TRUE, remove_
                                    remove_stops = remove_stops)
       } else {doc <- document}
       
-      pmi <- pmi(document, floor = 3, window, node, remove_stops = TRUE)
+      pmis <- pmi(document, floor = 3, window, node, remove_stops = TRUE)
       
-      npmi <- bind_rows(pmi,
-                        npmi = pmi/-log(probxy))
+      npmi <- pmis %>% add_column(npmi = pmis$pmi/(-log(pmis$probxy)))
 
 return(npmi)
 }
