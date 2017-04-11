@@ -7,7 +7,7 @@
 #' @param remove_stops OPTIONAL
 #' 
 #' 
-pmi <- function(document, window, node, floor, remove_stops = TRUE){
+pmi <- function(document, floor = 3, window, node, remove_stops = TRUE){
       # Test to see if the document is a collDB class
       # That is, that it has already gone through save_collocates
       if(class(document) != "collDB"){
@@ -15,24 +15,33 @@ pmi <- function(document, window, node, floor, remove_stops = TRUE){
                                    window = window, 
                                    node = node, 
                                    remove_stops = remove_stops)
-      }
-      # Convert duplicates, locations below 1 and above the word count to NA
-      left_locs <- doc[[1]] %>% unlist(.)
-      left_locs[duplicated(left_locs)] <- NA
-      left_locs[left_locs < 1] <- NA
-      left_locs[left_locs > nrow(doc$doc_table)] <- NA
+      } else {doc <- document}
       
-      all_locs <- c(left_locs, right_locs)
-      # Convert locations into words
-      all_counts <- doc$doc_table[all_locs,] %>%
+      # Count the collocates
+      
+      coll_counts <- count_collocates(doc)
+      
+      coll_counts <- filter(coll_counts, coll_count > floor)
+      
+      # Count all relevant words in the whole document
+      # Note, for efficiency sake I only count the words that are in the collocate window
+      all_words_counts <- filter(doc$doc_table, word %in% coll_counts$word) %>% 
             table(.) %>%
-            tibble(word = names(.), count = .)
-      # Leaving this here for offering locational collocate data
-      #left_counts <- doc$doc_table[left_locs, ] %>%
-       #     table(.) %>% 
-        #    tibble(word = names(.), count = .)  
+            tibble(word = names(.), all_count = .)
       
-      #right_counts <- doc$doc_table[right_locs, ] %>%
-       #     table(.) %>% 
-        #    tibble(word = names(.), count = .)
+      counts <- left_join(coll_counts, all_words_counts, by = "word")
+      
+      # Calculate the PMI
+      # Calculate pmi
+      
+      pmi <- tibble(phrase = coll_counts$word, 
+            collocate_freqs = coll_counts$coll_count, 
+            doc_freqs = all_words_counts$all_count,
+            probx = doc$node_recurrence/nrow(doc$doc_table),
+            proby = doc_freqs/nrow(doc$doc_table),
+            probxy = collocate_freqs/nrow(doc$doc_table),
+            pmi = log(probxy/(probx*proby)),
+            npmi = pmi/-log(probxy))
+      
+      return(pmi)
 }

@@ -10,16 +10,23 @@
 #' @importFrom digest sha1
 #' @keywords collocates kwic
 
-save_collocates <- function(document, window, node, remove_stops = TRUE){
+save_collocates <- function(document, window, node, remove_stops = TRUE, remove_numerals = TRUE){
       node_length <- length(unlist(strsplit(node, " ")))
       # Test to see if the node phrase is larger than the window
       if(node_length > ((window*2)+1)){ # longer than twice the window plus the keyword
             stop("Error: the node phrase is longer than the kwic window")
       }
+      # Remove numerals
+      if(remove_numerals == TRUE){
+            document <- str_replace_all(document, "[0-9]", "")      
+      }
+      
       document <- tolower(document)
-      # Hash the node to to create a single phrase (and ensure stopwords aren't removed)
+      
+      # Hash the node to to create a single phrase (and ensure stopwords contained in the 
+      # node aren't removed)
       node1 <- sha1(node)
-      document <- str_replace_all(document, node, node1)
+      document <- gsub(x = document, pattern = paste("\\b", node, "\\b", sep = ""), replacement = node1)
       # Unnest
       word.t <- tibble(document) %>% 
             unnest_tokens(word, 
@@ -29,31 +36,44 @@ save_collocates <- function(document, window, node, remove_stops = TRUE){
       # If required remove stopwords
       if(remove_stops == TRUE){
             data("stop_words")
-            x <- which(!(word.t$word %in% stop_words))
-            word.t <- word.t[x,]
+            word.t <- filter(word.t, !(word %in% stop_words$word))
+            #x <- which(!(word.t$word %in% stop_words$word))
+            #word.t <- word.t[x,]
       }
       # Get locations of node
       node_loc <- which(word.t == node1)
       # If there are no matches, just return a vector of NAs
       if(length(node_loc) == 0){
-            collocate_locs <- list(rep(NA, times=(window)), rep(NA, times=(window)), node, node1, word.t)
+            collocate_locs <- list(rep(NA, times=(window)), 
+                                   rep(NA, times=(window)), 
+                                   node, 
+                                   node1, 
+                                   word.t)
             
       } else {
-            left_locs <- lapply(node_loc, function(x) ((x-window):(x-1)))
-            right_locs <- lapply(node_loc, function(x) ((x+1):(x+window)))
-            # No need for a tibble here: a list of vectors would be more efficient. 
-            # A tibble would only be required if we were going to be displaying the locs, ubt we're not
-            #collocate_locs <- lapply(seq_along(1:length(left_locs)), function(x) as_tibble(t(min(left_locs[[x]]):max(right_locs[[x]]))))
-            #collocate_locs <- bind_rows(collocate_locs)
-            collocate_locs <- list(left_locs, right_locs, node, node1, word.t)
+            left_locs <- lapply(node_loc, function(x) 
+                  ((x-window):(x-1)))
+            right_locs <- lapply(node_loc, 
+                                 function(x) 
+                                       ((x+1):(x+window)))
+            # convert any node_locs into NA
+            left_locs <- lapply(left_locs, 
+                        function(x) 
+                              unlist(sapply(x,
+                                            function(a) 
+                                                  ifelse(a %in% node_loc, yes = a <- NA, no = a <- a))))
+            
+            right_locs <- lapply(right_locs, 
+                        function(x) 
+                              unlist(sapply(x,
+                                          function(a) 
+                                                ifelse(a %in% node_loc, yes = a <- NA, no = a <- a))))
+            
+            collocate_locs <- list(left_locs, right_locs, node, node1, length(node_loc), word.t)
       }
-      names(collocate_locs) <- c("left_locs", "right_locs", "node", "node_hash", "doc_table")
-      #left_cols <- paste("L", seq_along(window:1), sep="")
-      #right_cols <- paste("R", seq_along(1:window), sep="")
-      #name_cols <- c(left_cols, "node", right_cols)
-      #colnames(collocate_locs) <- name_cols
-      
-      as(object = collocate_locs, Class = "collDB")
+      names(collocate_locs) <- c("left_locs", "right_locs", "node", "node_hash", "node_recurrence", "doc_table")
+
+      collocate_locs <- as(object = collocate_locs, Class = "collDB")
       
       return(collocate_locs)     
 }
