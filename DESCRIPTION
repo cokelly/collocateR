@@ -12,5 +12,7 @@ Collate:
     'CollDB.R'
     'count_collocates.R'
     'pmi.R'
+    'stop_words.R'
     'save_collocates.R'
     'npmi.R'
+    'stop_words_importer.R'

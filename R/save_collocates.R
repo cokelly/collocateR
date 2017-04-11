@@ -7,10 +7,11 @@
 #' @param remove_numerals If TRUE, numerals are removed
 #' @param remove_punct If TRUE, puntuation is removed
 #' @import tibble dplyr
-#' @importFrom tidytext unnest_tokens stop_words
+#' @importFrom tidytext unnest_tokens
 #' @importFrom digest sha1
 #' @importFrom stringr str_replace_all
 #' @importFrom digest sha1
+#' @include stop_words.R
 #' @keywords collocates kwic
 #' @export
 
@@ -25,7 +26,7 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
             document <- str_replace_all(document, "[0-9]", "")      
       }
       if(remove_punct == TRUE){
-            document <- str_replace_all(document, "[^[:alnum:],]", "")
+            document <- str_replace_all(document, "[^[:alnum:]. ]", "")
       }
       
       document <- tolower(document)
@@ -43,9 +44,9 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
       # If required remove stopwords
       if(remove_stops == TRUE){
             data("stop_words")
-            word.t <- filter(word.t, !(word %in% stop_words$word))
-            #x <- which(!(word.t$word %in% stop_words$word))
-            #word.t <- word.t[x,]
+            #word.t <- dplyr::filter(word.t$word, !(. %in% stop_words$word))
+            x <- which(!(word.t %in% stop_words$word))
+            word.t <- word.t[x,]
       }
       # Get locations of node
       node_loc <- which(word.t == node1)
