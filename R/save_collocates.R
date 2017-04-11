@@ -6,11 +6,11 @@
 #' @param remove_stops If TRUE, stopwords are removed (stopwords derived from tidytext package)
 #' @import tidyverse tidytext
 #' @importFrom digest sha1
+#' @importFrom stringr str_replace_all
+#' @importFrom digest sha1
 #' @keywords collocates kwic
-#' @export
-#' 
 
-find_collocates <- function(document, window, node, remove_stops = TRUE){
+save_collocates <- function(document, window, node, remove_stops = TRUE){
       node_length <- length(unlist(strsplit(node, " ")))
       # Test to see if the node phrase is larger than the window
       if(node_length > ((window*2)+1)){ # longer than twice the window plus the keyword
@@ -30,7 +30,7 @@ find_collocates <- function(document, window, node, remove_stops = TRUE){
       if(remove_stops == TRUE){
             data("stop_words")
             x <- which(!(word.t$word %in% stop_words))
-                       word.t <- word.t[x,]
+            word.t <- word.t[x,]
       }
       # Get locations of node
       node_loc <- which(word.t == node1)
@@ -45,7 +45,7 @@ find_collocates <- function(document, window, node, remove_stops = TRUE){
             # A tibble would only be required if we were going to be displaying the locs, ubt we're not
             #collocate_locs <- lapply(seq_along(1:length(left_locs)), function(x) as_tibble(t(min(left_locs[[x]]):max(right_locs[[x]]))))
             #collocate_locs <- bind_rows(collocate_locs)
-      collocate_locs <- list(left_locs, right_locs, node, node1, word.t)
+            collocate_locs <- list(left_locs, right_locs, node, node1, word.t)
       }
       names(collocate_locs) <- c("left_locs", "right_locs", "node", "node_hash", "doc_table")
       #left_cols <- paste("L", seq_along(window:1), sep="")
@@ -53,5 +53,7 @@ find_collocates <- function(document, window, node, remove_stops = TRUE){
       #name_cols <- c(left_cols, "node", right_cols)
       #colnames(collocate_locs) <- name_cols
       
- return(collocate_locs)     
+      as(object = collocate_locs, Class = "collDB")
+      
+      return(collocate_locs)     
 }
