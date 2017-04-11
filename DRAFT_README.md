@@ -9,8 +9,7 @@ CollocateR serves a simple purpose. It processes collocates for keywords in cont
 
 ## Functions
 
-- **simple_kwic**: Return a [tibble](https://github.com/tidyverse/tibble) containing keywords in context for a node, arranged in columns across a window of words.
-- **make_collocates**: Return a list containing a tokenised version of the original document, a record of the node in original and hashed format, lists of left and right collocate locations, and document word_length.
+- **save_collocates**: Return a list containing a tokenised version of the original document, a record of the node in original and hashed format, lists of left and right collocate locations, and document word_length.
 - **pmi**: a 'pointwise mutual information' significance test based on the probability of nodes and collocates occurring together compared to the probability of their occurring independently. This is calculated as: $pmi(x;y) \equiv log\frac{p(x;y)}{p(y)}$.
 - **npmi**: as above, but normalised so all results occur between 1 (perfect collocation) and -1 (the terms never collocate).
 
