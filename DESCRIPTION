@@ -9,9 +9,7 @@ Encoding: UTF-8
 Collate: 
     'CollDB.R'
     'count_collocates.R'
-    'data.R'
     'pmi.R'
     'save_collocates.R'
     'npmi.R'
-    'stop_words_importer.R'
 RoxygenNote: 6.0.1.9000

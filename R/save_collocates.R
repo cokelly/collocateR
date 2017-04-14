@@ -6,7 +6,8 @@
 #' @param remove_stops If TRUE, stopwords are removed (stopwords derived from tidytext package)
 #' @param remove_numerals If TRUE, numerals are removed
 #' @param remove_punct If TRUE, puntuation is removed
-#' @import tidyverse tidytext
+#' @import dplyr
+#' @importFrom tidytext unnest_tokens
 #' @importFrom digest sha1
 #' @importFrom quanteda stopwords
 #' @importFrom stringr str_replace_all
@@ -39,7 +40,7 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
       ## print("L4")
       # Unnest
       word.t <- tibble(document) %>%
-            unnest_tokens(word,
+            tidytext::unnest_tokens(word,
                           document,
                           token = "ngrams",
                           n = 1)
