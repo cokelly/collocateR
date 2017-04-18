@@ -11,7 +11,7 @@
 #' @import tibble dplyr
 #' @keywords mutual information, collocates, kwic
 #' @export
-pmi <- function(document, floor = 3, window, node, remove_stops = TRUE, remove_numerals = TRUE, remove_punct = TRUE){
+pmi <- function(document, floor = 3, ngrams = 1, window, node, remove_stops = TRUE, remove_numerals = TRUE, remove_punct = TRUE){
       
       # Test to see if the document is a collDB class or a text document
       if(class(document) != "character" && class(document) != "collDB"){
@@ -25,10 +25,15 @@ pmi <- function(document, floor = 3, window, node, remove_stops = TRUE, remove_n
                                    remove_stops = remove_stops)
       } else {doc <- document}
       
+      if(ngrams == 1){
       # Count the collocates
-      
       coll_counts <- count_unigrams(doc)
-      
+      }
+      if(length(ngrams) > 1 && 1 %in% ngrams){
+            coll_unis <- count_unigrams(doc)
+            #ngrams_not1 <- THIS NEXT UP
+      }
+      # Remove any collocates that fall below the floor
       coll_counts <- filter(coll_counts, coll_count > floor)
       
       # Count all relevant words in the whole document

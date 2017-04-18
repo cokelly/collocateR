@@ -21,7 +21,6 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
       if(node_length > ((window*2)+1)){ # longer than twice the window plus the keyword
             stop("Error: the node phrase is longer than the kwic window")
       }
-      ## print("L1")
       # Remove numerals
       if(remove_numerals == TRUE){
             document <- str_replace_all(document, "[0-9]", "")
@@ -29,33 +28,26 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
       if(remove_punct == TRUE){
             document <- str_replace_all(document, "[^[:alnum:]. ]", "")
       }
-      #
-      ## print("L2")
-      #
+      # To lower
       document <- tolower(document)
-      ## print("L3")
       # Hash the node to to create a single phrase (and ensure stopwords contained in the
       # node aren't removed)
       node1 <- sha1(node)
       document <- gsub(x = document, pattern = paste("\\b", node, "\\b", sep = ""), replacement = node1)
-      ## print("L4")
       # Unnest
       word.t <- tibble(document) %>%
             tidytext::unnest_tokens(word,
                           document,
                           token = "ngrams",
                           n = 1)
-      ## print("L5")
       # If required remove stopwords
       if(remove_stops == TRUE){
             stops <- quanteda::stopwords("english")
             `%notin%` = function(x,y) !(x %in% y)
             word.t <- word.t %>% dplyr::filter(., word %notin% stops)
             }
-      ## print("L6")
       # Get locations of node
       node_loc <- which(word.t == node1)
-      ## print("L7")
       # If there are no matches, just return a vector of NAs
       if(length(node_loc) == 0){
             collocate_locs <- list(rep(NA, times=(window)),
@@ -90,11 +82,9 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
             all_locs <- mins_to_maxs(list(left_locs, right_locs, node, node1, length(node_loc), word.t))
             collocate_locs <- list(left_locs, right_locs, node, node1, length(node_loc), word.t, all_locs)      
       }
-      ## print("L8")
+      
       names(collocate_locs) <- c("left_locs", "right_locs", "node", "node_hash", "node_recurrence", "doc_table", "all_locs")
 
-      
-## print("L9")
       collocate_locs <- as(object = collocate_locs, Class = "collDB")
 
       return(collocate_locs)

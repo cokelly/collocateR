@@ -4,7 +4,7 @@
 \alias{pmi}
 \title{pointwise mutual information: a significance test for keywords in context}
 \usage{
-pmi(document, floor = 3, window, node, remove_stops = TRUE,
+pmi(document, floor = 3, ngrams = 1, window, node, remove_stops = TRUE,
   remove_numerals = TRUE, remove_punct = TRUE)
 }
 \arguments{

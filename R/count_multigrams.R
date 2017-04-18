@@ -7,6 +7,37 @@
 count_multigrams <- function(collsDB, ngram){
       
       all_locs <- collsDB[[7]]
+      # Convert locations into words
+      texts <- lapply(all_locs, function(x)
+            collsDB$doc_table[x,])
+      # Return the node text
+      texts <- lapply(texts, function(x)
+            tibble(word = str_replace_all(x$word,
+                                   collsDB$node_hash, 
+                                   collsDB$node)))
       
+      # An internal function to create a list of ngrams from texts
+      ngramiser <- function(texts, ngram){
+            vectorised <- texts %>% 
+                  select(word) %>% 
+                  sapply(as.character) %>% 
+                  as.vector
+            ngrams <- tibble(vectorised) %>%
+                  tidytext::unnest_tokens(word,
+                                          vectorised,
+                                          token = "ngrams",
+                                          n = ngram)
+            return(ngrams)
+      }
+      #Unnest for requisite ngram for each element in the list
+      colls <- lapply(texts, function(x) ngramiser(x, ngram))
+      
+      # Turn the list into a tibble
+      collss <- bind_rows(colls) %>%
+            table(.) %>%
+            tibble(word = names(.), collss = .)
+      
+      
+      return(collss)
       
 }
