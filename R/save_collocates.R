@@ -66,13 +66,8 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
                                    word.t)
 
       } else {
-#The below is good for isolating unigrams
-#If I want to go further I need to get min-left to max-right and replace
-#the hash with the original node. For unigrams it shouldn't be too hard
-# to then just count up the words and produce pmi. For multigrams it's
-# much harder: I need to generate a sequence of phrases elsewhere 
-#from the list of locs and then use these to isolate the relevant 
-# phrases in the text as a whole
+# Isolate locations to left and right (could be more efficient, but might be useful in future 
+# for isolating left and right collocates)
             left_locs <- lapply(node_loc, function(x)
                   ((x-window):(x-1)))
             right_locs <- lapply(node_loc,

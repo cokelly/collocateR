@@ -8,7 +8,8 @@ License: GPLv3
 Encoding: UTF-8
 Collate: 
     'CollDB.R'
-    'count_collocates.R'
+    'count_unigrams.R'
+    'mins_to_maxs.R'
     'pmi.R'
     'save_collocates.R'
     'npmi.R'

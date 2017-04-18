@@ -4,16 +4,9 @@
 #' @include CollDB.R
 #' @import tibble dplyr
 #'
-count_collocates <- function(collsDB){
+count_unigrams <- function(collsDB){
       # Convert duplicates, locations below 1 and above the word count to NA
-left_locs <- collsDB[[1]] %>% unlist(.)
-right_locs <- collsDB[[1]] %>% unlist(.)
-all_locs <- c(left_locs, right_locs)
-# Convert duplicates, locations below 1 and above the word count to NA
-all_locs[duplicated(all_locs)] <- NA
-all_locs[all_locs < 1] <- NA
-all_locs[all_locs > nrow(collsDB$doc_table)] <- NA
-
+all_locs <- mins_to_maxs(collsDB) %>% unlist
 # Convert locations into words
 coll_counts <- collsDB$doc_table[all_locs,] %>%
       table(.) %>%

@@ -7,12 +7,16 @@
 #' @param remove_stops OPTIONAL If TRUE, stopwords are removed (stopwords derived from tidytext package). Not required if importing a collDB from save_collocates
 #' @param remove_numerals OPTIONAL If TRUE, numerals are removed. Not required if importing a collDB from save_collocates
 #' @param remove_punct OPTIONAL If TRUE, puntuation is removed. Not required if importing a collDB from save_collocates
-#' @include CollDB.R count_collocates.R
+#' @include CollDB.R count_unigrams.R
 #' @import tibble dplyr
 #' @keywords mutual information, collocates, kwic
 #' @export
 pmi <- function(document, floor = 3, window, node, remove_stops = TRUE, remove_numerals = TRUE, remove_punct = TRUE){
-      # Test to see if the document is a collDB class
+      
+      # Test to see if the document is a collDB class or a text document
+      if(class(document) != "character" && class(document) != "collDB"){
+            stop("This package requires a character vector or an internal 'collDB' list")
+      }
       # That is, that it has already gone through save_collocates
       if(class(document) != "collDB"){
             doc <- save_collocates(document = document, 
@@ -23,7 +27,7 @@ pmi <- function(document, floor = 3, window, node, remove_stops = TRUE, remove_n
       
       # Count the collocates
       
-      coll_counts <- count_collocates(doc)
+      coll_counts <- count_unigrams(doc)
       
       coll_counts <- filter(coll_counts, coll_count > floor)
       
