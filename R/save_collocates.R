@@ -87,9 +87,15 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
                                                 ifelse(a %in% node_loc, yes = a <- NA, no = a <- a))))
 
             collocate_locs <- list(left_locs, right_locs, node, node1, length(node_loc), word.t)
+      
+            # Now create a list of word sequences (useful for calculating multigrams)
+            all_locs <- mins_to_maxs(collocate_locs)
+            collocate_locs <- list(left_locs, right_locs, node, node1, length(node_loc), word.t, all_locs)      
       }
       ## print("L8")
-      names(collocate_locs) <- c("left_locs", "right_locs", "node", "node_hash", "node_recurrence", "doc_table")
+      names(collocate_locs) <- c("left_locs", "right_locs", "node", "node_hash", "node_recurrence", "doc_table", "all_locs")
+
+      
 ## print("L9")
       collocate_locs <- as(object = collocate_locs, Class = "collDB")
 

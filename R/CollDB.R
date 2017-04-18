@@ -11,5 +11,6 @@ collDB <- setClass("collDB",
                              node = "character", 
                              node_hash = "character", 
                              node_recurrence = "numeric",
-                             doc_table = "tbl_df"), 
+                             doc_table = "tbl_df",
+                             all_locs = "list"), 
                    contains = "list")
