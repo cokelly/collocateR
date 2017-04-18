@@ -6,4 +6,7 @@
 #'
 count_multigrams <- function(collsDB, ngram){
       
+      all_locs <- collsDB[[7]]
+      
+      
 }

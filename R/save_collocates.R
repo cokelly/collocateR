@@ -6,6 +6,7 @@
 #' @param remove_stops If TRUE, stopwords are removed (stopwords derived from tidytext package)
 #' @param remove_numerals If TRUE, numerals are removed
 #' @param remove_punct If TRUE, puntuation is removed
+#' @include mins_to_maxs.R
 #' @import dplyr
 #' @importFrom tidytext unnest_tokens
 #' @importFrom digest sha1
@@ -50,9 +51,7 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
             stops <- quanteda::stopwords("english")
             `%notin%` = function(x,y) !(x %in% y)
             word.t <- word.t %>% dplyr::filter(., word %notin% stops)
-            #x <- which(word.t$word %notin% stop$word)
-            #word.t <- word.t[x,]
-      }
+            }
       ## print("L6")
       # Get locations of node
       node_loc <- which(word.t == node1)
@@ -63,7 +62,8 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
                                    rep(NA, times=(window)),
                                    node,
                                    node1,
-                                   word.t)
+                                   word.t,
+                                   rep(NA, times=((window*2)+1)))
 
       } else {
 # Isolate locations to left and right (could be more efficient, but might be useful in future 
@@ -85,11 +85,9 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
                               unlist(sapply(x,
                                           function(a)
                                                 ifelse(a %in% node_loc, yes = a <- NA, no = a <- a))))
-
-            collocate_locs <- list(left_locs, right_locs, node, node1, length(node_loc), word.t)
       
             # Now create a list of word sequences (useful for calculating multigrams)
-            all_locs <- mins_to_maxs(collocate_locs)
+            all_locs <- mins_to_maxs(list(left_locs, right_locs, node, node1, length(node_loc), word.t))
             collocate_locs <- list(left_locs, right_locs, node, node1, length(node_loc), word.t, all_locs)      
       }
       ## print("L8")
