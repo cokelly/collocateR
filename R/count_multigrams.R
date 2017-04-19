@@ -32,12 +32,26 @@ count_multigrams <- function(collsDB, ngram){
       #Unnest for requisite ngram for each element in the list
       colls <- lapply(texts, function(x) ngramiser(x, ngram))
       
-      # Turn the list into a tibble
-      collss <- bind_rows(colls) %>%
+      # Turn the colls list into a tibble with counts
+      colls_bound <- bind_rows(colls) %>%
             table(.) %>%
             tibble(word = names(.), collss = .)
-      
-      
-      return(collss)
+      # Turn the colls list into a vector
+      colls_vector <- colls_bound %>%
+            select(word) %>%
+            sapply(as.character) %>%
+            as.vector
+      # Get hashes 
+      count_all_terms <- function(collsDB, colls_vector){
+            all_words_vectorised <- collsDB$doc_table %>%
+                  select(word) %>%
+                  sapply(as.character) %>%
+                  as.vector %>% 
+                  paste(., sep = " ", collapse = " ") %>%
+                  str_replace_all(., collsDB$node_hash, collsDB$node) # replace hashed node
+            # Count the ngrams
+            counted_ngrams <- str_count(all_words_vectorised, cols_vector)
+            return(counted_ngrams)
+      }
       
 }

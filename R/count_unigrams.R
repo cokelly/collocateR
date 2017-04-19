@@ -12,8 +12,6 @@ coll_counts <- collsDB$doc_table[all_locs,] %>%
       table(.) %>%
       tibble(word = names(.), coll_count = .)
 
-
-
 return(coll_counts)
 }
 
