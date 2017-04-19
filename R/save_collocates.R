@@ -3,7 +3,7 @@
 #' @param document The document to be analysed
 #' @param window The size of the collocate window on each side of tne node
 #' @param node A key word or phrase
-#' @param remove_stops If TRUE, stopwords are removed (stopwords derived from tidytext package)
+#' @param remove_stops If TRUE, stopwords are removed (stopwords derived from quanteda package)
 #' @param remove_numerals If TRUE, numerals are removed
 #' @param remove_punct If TRUE, puntuation is removed
 #' @include mins_to_maxs.R
