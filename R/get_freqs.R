@@ -32,7 +32,7 @@ if(isTRUE(length(ngrams) > 1)){
             return(freqs)
       }
       freqs <- lapply(seq_along(1:length(ngrams)), function(x) 
-            direct_to_ngram_function(doc, ngrams[x])) %>%
+            direct_to_ngram_function(document, ngrams[x])) %>%
             bind_rows
 }
       return(freqs)
