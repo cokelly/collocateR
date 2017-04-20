@@ -51,11 +51,6 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
       # If there are no matches, just return a record that the node doesn't occur and issue a warning
       if(isTRUE(length(node_loc) == 0)){
             collocate_locs <- "The node does not occur in this document"
-            if(isTRUE(length(names(document)) != 0)){
-                  warning(paste("The node does not occur in", names(document), sep = " "))
-            } else {
-                  warning("The node does not occur in this document")
-            }
       } else {
 # Isolate locations to left and right (could be more efficient, but might be useful in future 
 # for isolating left and right collocates)
