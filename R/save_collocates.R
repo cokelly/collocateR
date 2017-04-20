@@ -50,16 +50,11 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
       node_loc <- which(word.t == node1)
       # If there are no matches, just return a vector of NAs
       if(isTRUE(length(node_loc) == 0)){
-            collocate_locs <- list(rep(NA, times=(window)),
-                                   rep(NA, times=(window)),
-                                   node,
-                                   node1,
-                                   word.t,
-                                   rep(NA, times=((window*2)+1)))
-            if(names(document) == NULL){
-                  warning("The node does not occur in this document")
+            collocate_locs <- "The node does not occur in this document"
+            if(isTRUE(names(document) == NULL)){
+                  warning(paste("The node does not occur in", names(document), ".", sep = " "), immediate. = TRUE)
             } else {
-            warning(paste("The node does not occur in", names(document), ".", sep = " "), immediate. = TRUE)
+                  warning("The node does not occur in this document")
             }
       } else {
 # Isolate locations to left and right (could be more efficient, but might be useful in future 
@@ -85,11 +80,13 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
             # Now create a list of word sequences (useful for calculating multigrams)
             all_locs <- mins_to_maxs(list(left_locs, right_locs, node, node1, length(node_loc), word.t))
             collocate_locs <- list(left_locs, right_locs, node, node1, length(node_loc), word.t, all_locs)      
+            
+            names(collocate_locs) <- c("left_locs", "right_locs", "node", "node_hash", "node_recurrence", "doc_table", "all_locs")
+            
+            collocate_locs <- as(object = collocate_locs, Class = "collDB")
       }
       
-      names(collocate_locs) <- c("left_locs", "right_locs", "node", "node_hash", "node_recurrence", "doc_table", "all_locs")
-
-      collocate_locs <- as(object = collocate_locs, Class = "collDB")
+      
 
       return(collocate_locs)
 }
