@@ -74,7 +74,7 @@ count_multigrams <- function(collsDB, ngram){
       }
       count_ngrams_all_text <- count_all_terms(collsDB, colls_vector)
       
-      multigram_counts <- full_join(x = colls_bound, y = count_ngrams_all_text)
+      multigram_counts <- full_join(x = colls_bound, y = count_ngrams_all_text, by = "word")
       
       colnames(multigram_counts) <- c("word", "coll_freq", "doc_freq")
       return(multigram_counts)

@@ -30,7 +30,7 @@ all_locs <- all_locs %>%
       as_tibble
 colnames(all_locs) <- c("word", "doc_freqs")
 
-unigram_counts <- full_join(x = coll_counts, y = all_locs)
+unigram_counts <- full_join(x = coll_counts, y = all_locs, by = "word")
 
 colnames(unigram_counts) <- c("word", "coll_freq", "doc_freq")
 

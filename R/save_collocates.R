@@ -49,14 +49,18 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
       # Get locations of node
       node_loc <- which(word.t == node1)
       # If there are no matches, just return a vector of NAs
-      if(length(node_loc) == 0){
+      if(isTRUE(length(node_loc) == 0)){
             collocate_locs <- list(rep(NA, times=(window)),
                                    rep(NA, times=(window)),
                                    node,
                                    node1,
                                    word.t,
                                    rep(NA, times=((window*2)+1)))
-
+            if(names(document) == NULL){
+                  warning("The node does not occur in this document")
+            } else {
+            warning(paste("The node does not occur in", names(document), ".", sep = " "), immediate. = TRUE)
+            }
       } else {
 # Isolate locations to left and right (could be more efficient, but might be useful in future 
 # for isolating left and right collocates)
