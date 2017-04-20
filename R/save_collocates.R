@@ -48,11 +48,11 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
             }
       # Get locations of node
       node_loc <- which(word.t == node1)
-      # If there are no matches, just return a vector of NAs
+      # If there are no matches, just return a record that the node doesn't occur and issue a warning
       if(isTRUE(length(node_loc) == 0)){
             collocate_locs <- "The node does not occur in this document"
-            if(isTRUE(names(document) == NULL)){
-                  warning(paste("The node does not occur in", names(document), ".", sep = " "), immediate. = TRUE)
+            if(isTRUE(length(names(document)) != 0)){
+                  warning(paste("The node does not occur in", names(document), sep = " "))
             } else {
                   warning("The node does not occur in this document")
             }
