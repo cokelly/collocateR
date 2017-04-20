@@ -17,4 +17,5 @@ Collate:
     'get_pmi.R'
     'pmi.R'
     'npmi.R'
-RoxygenNote: 6.0.1.9000
+    'z_score.R'
+RoxygenNote: 6.0.1
