@@ -12,6 +12,8 @@ pmi(document, floor = 3, ngrams = 1, window, node, remove_stops = TRUE,
 
 \item{floor}{Collocates that occur fewer times than floor will be removed}
 
+\item{ngrams}{The length of the ngrams to be tested}
+
 \item{window}{OPTIONAL The size of the collocate window on each side of tne node. Not required if importing a collDB from save_collocates}
 
 \item{node}{OPTIONAL A key word or phrase. Not required if importing a collDB from save_collocates}

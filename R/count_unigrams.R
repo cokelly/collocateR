@@ -6,13 +6,35 @@
 #'
 count_unigrams <- function(collsDB){
       # Convert duplicates, locations below 1 and above the word count to NA
-all_locs <- collsDB[[7]] %>% unlist(.)
+all_locs <- collsDB$all_locs %>% unlist(.)
 # Convert locations into words
 coll_counts <- collsDB$doc_table[all_locs,] %>%
-      table(.) %>%
-      tibble(word = names(.), coll_count = .)
+      table %>% as_tibble
 
-return(coll_counts)
+colnames(coll_counts) <- c("word", "coll_freq")
+
+# replaced hashed node with original node
+coll_counts$word <- str_replace_all(coll_counts$word, collsDB$node_hash, collsDB$node)
+# Create a vector of collocates for testing all freqs
+word_vector <- coll_counts %>% 
+      select(word) %>%
+      sapply(as.character) %>%
+      as.vector
+# Isolate relevant words
+all_locs <- collsDB$doc_table
+all_locs <- tibble(word = str_replace_all(all_locs$word, collsDB$node_hash, collsDB$node))
+
+all_locs <- all_locs %>% 
+      filter(word %in% word_vector) %>%
+      table %>%
+      as_tibble
+colnames(all_locs) <- c("word", "doc_freqs")
+
+unigram_counts <- full_join(x = coll_counts, y = all_locs)
+
+colnames(unigram_counts) <- c("word", "coll_freq", "doc_freq")
+
+return(unigram_counts)
 }
 
 # Leaving this here for offering locational collocate data

@@ -11,19 +11,21 @@
 #' @import tibble dplyr
 #' @keywords mutual information, collocates, kwic
 #' @export
-npmi <- function(document, floor = 3, window, node, remove_stops = TRUE, remove_numerals = TRUE, remove_punct = TRUE){
-      # Test to see if the document is a collDB class
-      # That is, that it has already gone through save_collocates
-      if(class(document) != "collDB"){
-            doc <- save_collocates(document = document, 
-                                   window = window, 
-                                   node = node, 
-                                   remove_stops = remove_stops)
-      } else {doc <- document}
+npmi <- function(document, floor = 3, ngrams = 1, window, node, remove_stops = TRUE, remove_numerals = TRUE, remove_punct = TRUE){
       
-      pmis <- pmi(document, floor = 3, window, node, remove_stops = TRUE)
+      # Test the document and return a collDB list if it hasn't been done already
+      document <- collDB_test(document, window, node, remove_stops, remove_numerals, remove_punct)
+      # Get frequencies
+      freqs <- get_freqs(document, ngrams, window, node, remove_stops = TRUE, remove_numerals = TRUE, remove_punct = TRUE)
+      # Filter for floor
+      freqs <- freqs %>% filter(coll_freq >= floor)
       
-      npmi <- pmis %>% add_column(npmi = pmis$pmi/(-log(pmis$probxy)))
+      pmis <- get_pmi(document, freqs)
+      
+      npmi <- pmis %>%
+            add_column(npmi = pmis$pmi/(-log(pmis$probxy))) %>%
+            dplyr::select(phrase, npmi) %>% 
+            arrange(., desc(npmi))
 
 return(npmi)
 }

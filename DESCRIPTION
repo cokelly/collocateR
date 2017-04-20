@@ -8,10 +8,13 @@ License: GPLv3
 Encoding: UTF-8
 Collate: 
     'CollDB.R'
+    'collDB_test.R'
     'count_multigrams.R'
     'count_unigrams.R'
     'mins_to_maxs.R'
-    'pmi.R'
     'save_collocates.R'
+    'get_freqs.R'
+    'get_pmi.R'
+    'pmi.R'
     'npmi.R'
 RoxygenNote: 6.0.1.9000

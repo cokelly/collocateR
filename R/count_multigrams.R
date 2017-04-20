@@ -35,8 +35,10 @@ count_multigrams <- function(collsDB, ngram){
       colls <- lapply(texts, function(x) ngramiser(x, ngram))
 
       # Turn the colls list into a tibble with counts
-      colls_bound <- colls %>% bind_rows %>%
-            table %>% as_tibble
+      colls_bound <- colls %>%
+            bind_rows %>%
+            table %>%
+            as_tibble
       colnames(colls_bound) <- c("word", "collocates_freq")
       ################################################
       # Now to isolate the collocated phrases from the text as a whole
@@ -62,14 +64,17 @@ count_multigrams <- function(collsDB, ngram){
                                 token = "ngrams",
                                 n = ngram)
             # Isolate only matching phrases and count
-            all_locs <- phrases %>% filter(phrases$word %in% colls_vector) %>% table %>% as_tibble
+            all_locs <- phrases %>% 
+                  filter(phrases$word %in% colls_vector) %>%
+                  table %>%
+                  as_tibble
             
             colnames(all_locs) <- c("word", "doc_freqs")
-            return(counted_ngrams)
+            return(all_locs)
       }
       count_ngrams_all_text <- count_all_terms(collsDB, colls_vector)
       
-      multigram_counts <- full_join(x = colls_bound, y = count_ngrams_all_text, by = word)
+      multigram_counts <- full_join(x = colls_bound, y = count_ngrams_all_text)
       
       colnames(multigram_counts) <- c("word", "coll_freq", "doc_freq")
       return(multigram_counts)
