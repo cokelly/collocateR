@@ -15,11 +15,14 @@ CollocateR serves a simple purpose. It processes collocates for keywords in cont
 
 ## TODO
 
-- MI3
-- z-score
-- observed_expected
-- log_log
-- log_likelihood
+- [x] save_collocates
+- [x] pmi
+- [x] npmi
+- [ ] MI3
+- [ ] z-score
+- [ ] observed_expected
+- [ ] log_log
+- [ ] log_likelihood
 
 ### Acknowledgement
 
