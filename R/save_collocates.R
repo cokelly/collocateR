@@ -1,0 +1,87 @@
+#' returns a list containing node locations, window locations, the node and its hash, and a doc_table
+#'
+#' @param document The document to be analysed
+#' @param window The size of the collocate window on each side of tne node
+#' @param node A key word or phrase
+#' @param remove_stops If TRUE, stopwords are removed (stopwords derived from quanteda package)
+#' @param remove_numerals If TRUE, numerals are removed
+#' @param remove_punct If TRUE, puntuation is removed
+#' @include mins_to_maxs.R
+#' @import dplyr
+#' @importFrom tidytext unnest_tokens
+#' @importFrom digest sha1
+#' @importFrom quanteda stopwords
+#' @importFrom stringr str_replace_all
+#' @keywords collocates kwic
+#' @export
+
+save_collocates <- function(document, window, node, remove_stops = TRUE, remove_numerals = TRUE, remove_punct = TRUE){
+      node_length <- length(unlist(strsplit(node, " ")))
+      # Test to see if the node phrase is larger than the window
+      if(node_length > ((window*2)+1)){ # longer than twice the window plus the keyword
+            stop("Error: the node phrase is longer than the kwic window")
+      }
+      # Remove numerals
+      if(remove_numerals == TRUE){
+            document <- str_replace_all(document, "[0-9]", "")
+      }
+      if(remove_punct == TRUE){
+            document <- str_replace_all(document, "[^[:alnum:]. ]", "")
+      }
+      # To lower
+      document <- tolower(document)
+      # Hash the node to to create a single phrase (and ensure stopwords contained in the
+      # node aren't removed)
+      node1 <- sha1(node)
+      document <- gsub(x = document, pattern = paste("\\b", node, "\\b", sep = ""), replacement = node1)
+      # Unnest
+      word.t <- tibble(document) %>%
+            tidytext::unnest_tokens(word,
+                          document,
+                          token = "ngrams",
+                          n = 1)
+      # If required remove stopwords
+      if(remove_stops == TRUE){
+            stops <- quanteda::stopwords("english")
+            `%notin%` = function(x,y) !(x %in% y)
+            word.t <- word.t %>% dplyr::filter(., word %notin% stops)
+            }
+      # Get locations of node
+      node_loc <- which(word.t == node1)
+      # If there are no matches, just return a record that the node doesn't occur and issue a warning
+      if(isTRUE(length(node_loc) == 0)){
+            collocate_locs <- "The node does not occur in this document"
+      } else {
+# Isolate locations to left and right (could be more efficient, but might be useful in future 
+# for isolating left and right collocates)
+            left_locs <- lapply(node_loc, function(x)
+                  ((x-window):(x-1)))
+            right_locs <- lapply(node_loc,
+                                 function(x)
+                                       ((x+1):(x+window)))
+            # convert any node_locs into NA
+            left_locs <- lapply(left_locs,
+                        function(x)
+                              unlist(sapply(x,
+                                            function(a)
+                                                  ifelse(a %in% node_loc, yes = a <- NA, no = a <- a))))
+
+            right_locs <- lapply(right_locs,
+                        function(x)
+                              unlist(sapply(x,
+                                          function(a)
+                                                ifelse(a %in% node_loc, yes = a <- NA, no = a <- a))))
+      
+            # Now create a list of word sequences (useful for calculating multigrams)
+            all_locs <- mins_to_maxs(list(left_locs, right_locs, node, node1, length(node_loc), word.t))
+            collocate_locs <- list(left_locs, right_locs, node, node1, length(node_loc), word.t, all_locs)      
+            
+            names(collocate_locs) <- c("left_locs", "right_locs", "node", "node_hash", "node_recurrence", "doc_table", "all_locs")
+            
+            collocate_locs <- as(object = collocate_locs, Class = "collDB")
+      }
+      
+      
+
+      return(collocate_locs)
+}
