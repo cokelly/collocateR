@@ -4,14 +4,15 @@
 #' @include CollDB.R
 #' @import tibble dplyr
 #' @importFrom stringr str_count str_replace_all
+#' @importFrom tidytext unnest_tokens
 #'
 count_multigrams <- function(collsDB, ngram){
       
-      all_locs <- collsDB[[7]]
+      all_locs <- collsDB$all_locs
       # Convert locations into words
       texts <- lapply(all_locs, function(x)
             collsDB$doc_table[x,])
-      # Return the node text
+      # Return the node text from its hashed version
       texts <- lapply(texts, function(x)
             tibble(word = str_replace_all(x$word,
                                    collsDB$node_hash, 
@@ -32,16 +33,19 @@ count_multigrams <- function(collsDB, ngram){
       }
       #Unnest for requisite ngram for each element in the list
       colls <- lapply(texts, function(x) ngramiser(x, ngram))
-      
+
       # Turn the colls list into a tibble with counts
-      colls_bound <- bind_rows(colls) %>%
-            table(.) %>%
-            tibble(word = names(.), collss = .)
-      # Turn the colls list into a vector
+      colls_bound <- colls %>% bind_rows %>%
+            table %>% as_tibble
+      colnames(colls_bound) <- c("word", "collocates_freq")
+      ################################################
+      # Now to isolate the collocated phrases from the text as a whole
+      # Turn the colls tibble into a vector
       colls_vector <- colls_bound %>%
             select(word) %>%
             sapply(as.character) %>%
             as.vector
+      
       # Count all the collocates across the text
       count_all_terms <- function(collsDB, colls_vector){
         # vectorise the whole document
@@ -51,13 +55,21 @@ count_multigrams <- function(collsDB, ngram){
                   as.vector %>% 
                   paste(., sep = " ", collapse = " ") %>%
                   str_replace_all(., collsDB$node_hash, collsDB$node) # <-- replace hashed node
-            # Count the ngrams
-            counted_ngrams <- str_count(all_words_vectorised, colls_vector)
+            # Create ngrams
+            phrases <- tibble(all_words_vectorised) %>% 
+                  unnest_tokens(word, 
+                                all_words_vectorised, 
+                                token = "ngrams",
+                                n = ngram)
+            # Isolate only matching phrases and count
+            all_locs <- phrases %>% filter(phrases$word %in% colls_vector) %>% table %>% as_tibble
+            
+            colnames(all_locs) <- c("word", "doc_freqs")
             return(counted_ngrams)
       }
       count_ngrams_all_text <- count_all_terms(collsDB, colls_vector)
       
-      multigram_counts <- bind_cols(colls_bound, as_tibble(count_ngrams_all_text))
+      multigram_counts <- full_join(x = colls_bound, y = count_ngrams_all_text, by = word)
       
       colnames(multigram_counts) <- c("word", "coll_freq", "doc_freq")
       return(multigram_counts)
