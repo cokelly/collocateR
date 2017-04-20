@@ -27,8 +27,8 @@ z_score <- function(document, floor = 3, ngrams = 1, window, node, remove_stops 
 
       #calculcate the z-score
       z_score <- tibble(word = freqs$word,
-                        prob = freqs$doc_freq/(nrow(document$doc_table)-collocates$node_recurrence), #prob = Fc/(N-Fn)
-                        expected = prob*collocates$node_recurrence*(length(collocates$left_locs[[1]])*2), #expected = pFnS
+                        prob = freqs$doc_freq/(nrow(document$doc_table)-document$node_recurrence), #prob = Fc/(N-Fn)
+                        expected = prob*document$node_recurrence*(length(document$left_locs[[1]])*2), #expected = pFnS
                         zscore = (freqs$coll_freq-expected)/sqrt(expected*(1-prob))) # (Fn,c-E/sqrt(E(1-p)))
 
       z_score <- z_score %>% select(word, z_score = zscore) %>% arrange(desc(z_score))
