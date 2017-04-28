@@ -17,5 +17,6 @@ Collate:
     'get_pmi.R'
     'pmi.R'
     'npmi.R'
+    't_score.R'
     'z_score.R'
 RoxygenNote: 6.0.1

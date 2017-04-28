@@ -1,4 +1,4 @@
-#' A z-score calculates a probability score that compares the observed collocate frequency to its expected value
+#' A t-score calculates a probability score that compares the observed collocate frequency to its expected value
 #'
 #' @param document A collDB, produced through save_collocates, or a text file
 #' @param floor Collocates that occur fewer times than floor will be removed
@@ -16,18 +16,18 @@
 #' @keywords zscore, collocates, kwic
 #' @export
 
-z_score <- function(document, floor = 3, ngrams = 1, window, node, remove_stops = TRUE, remove_numerals = TRUE, remove_punct = TRUE){
-
+t_score <- function(document, floor = 3, ngrams = 1, window, node, remove_stops = TRUE, remove_numerals = TRUE, remove_punct = TRUE){
+      
       # Test the document and return a collDB list if it hasn't been done already
       document <- collDB_test(document, window, node, remove_stops, remove_numerals, remove_punct)
       # Get frequencies
       freqs <- get_freqs(document, ngrams, window = window, node = document$node, remove_stops = TRUE, remove_numerals = TRUE, remove_punct = TRUE)
       # Filter for floor
       freqs <- freqs %>% filter(coll_freq >= floor)
-
+      
       #calculcate the z-score
-      z_score <- tibble(word = freqs$word, # Collocates
-                        `collocate freq` = freqs$coll_freq, 
+      t_score <- tibble(word = freqs$word, # Collocates
+                        `collocate freq` = freqs$coll_freq,
                         #prob = Probability of collocate occuring where the node does not occur:
                         #frequency in document / overall word count - freq of node
                         prob = freqs$doc_freq/(nrow(document$doc_table)-document$node_recurrence), 
@@ -35,10 +35,10 @@ z_score <- function(document, floor = 3, ngrams = 1, window, node, remove_stops 
                         # prob * freq of node * window * span (window but here calculated from collDB list)
                         expected = prob*document$node_recurrence*(length(document$left_locs[[1]])*2),
                         # frequency of collocates in context - expected / sqrt (expected * (1-prob))
-                        zscore = (freqs$coll_freq-expected)/sqrt(expected*(1-prob))) # (Fn,c-E/sqrt(E(1-p)))
-
-      z_score <- z_score %>% select(word, `collocate freq`, z_score = zscore) %>% arrange(desc(z_score))
-
-
-return(z_score)
+                        tscore = (freqs$coll_freq-expected)/sqrt(freqs$coll_freq)) # (Fn,c-E/sqrt(E(1-p)))
+      
+      t_score <- t_score %>% select(word, `collocate freq`, t_score = tscore) %>% arrange(desc(t_score))
+      
+      
+      return(t_score)
 }
