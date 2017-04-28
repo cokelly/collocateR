@@ -20,8 +20,9 @@ CollocateR serves a simple purpose. It processes collocates for keywords in cont
 - [x] save_collocates
 - [x] pmi
 - [x] npmi
-- [ ] MI3
 - [x] z-score
+- [ ] t-score
+- [ ] MI3
 - [ ] observed_expected
 - [ ] log_log
 - [ ] log_likelihood
