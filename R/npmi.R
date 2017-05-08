@@ -20,12 +20,15 @@ npmi <- function(document, floor = 3, ngrams = 1, window, node, remove_stops = T
       # Filter for floor
       freqs <- freqs %>% filter(coll_freq >= floor)
       
+      if(nrow(freqs) == 0){
+            npmi <- "No collocates. Try setting the floor at a lower level"
+      } else {
       pmis <- get_pmi(document, freqs)
       
       npmi <- pmis %>%
             add_column(npmi = pmis$pmi/(-log(pmis$probxy))) %>%
             dplyr::select(phrase, npmi) %>% 
             arrange(., desc(npmi))
-
+}
 return(npmi)
 }

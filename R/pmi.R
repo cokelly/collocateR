@@ -22,6 +22,9 @@ pmi <- function(document, floor = 3, ngrams = 1, window, node, remove_stops = TR
       # Filter for floor
       freqs <- freqs %>% filter(coll_freq >= floor)
       
+      if(nrow(freqs) == 0){
+            pmi <- "No collocates. Try setting the floor at a lower level"
+      } else {
       # Calculate pointwise mutual information
       # This is in a separate function to allow for use in npmi function
       raw_pmi <- get_pmi(document, freqs)
@@ -29,6 +32,6 @@ pmi <- function(document, floor = 3, ngrams = 1, window, node, remove_stops = TR
       pmi <- raw_pmi %>% 
             dplyr::select(phrase, pmi) %>% 
             arrange(., desc(pmi))
-      
+      }
       return(pmi)
 }

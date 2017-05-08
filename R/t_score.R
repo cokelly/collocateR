@@ -25,6 +25,10 @@ t_score <- function(document, floor = 3, ngrams = 1, window, node, remove_stops 
       # Filter for floor
       freqs <- freqs %>% filter(coll_freq >= floor)
       
+      if(nrow(freqs) == 0){
+            t_score <- "No collocates. Try setting the floor at a lower level"
+      } else {
+      
       #calculcate the z-score
       t_score <- tibble(word = freqs$word, # Collocates
                         `collocate freq` = freqs$coll_freq,
@@ -38,7 +42,7 @@ t_score <- function(document, floor = 3, ngrams = 1, window, node, remove_stops 
                         tscore = (freqs$coll_freq-expected)/sqrt(freqs$coll_freq)) # (Fn,c-E/sqrt(E(1-p)))
       
       t_score <- t_score %>% select(word, `collocate freq`, t_score = tscore) %>% arrange(desc(t_score))
-      
+      }      
       
       return(t_score)
 }

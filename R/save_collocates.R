@@ -12,6 +12,7 @@
 #' @importFrom digest sha1
 #' @importFrom quanteda stopwords
 #' @importFrom stringr str_replace_all
+#' @importFrom stringi stri_extract_first_words
 #' @keywords collocates kwic
 #' @export
 
@@ -21,6 +22,10 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
       if(node_length > ((window*2)+1)){ # longer than twice the window plus the keyword
             stop("Error: the node phrase is longer than the kwic window")
       }
+      # Test that the text is greater than length zero
+      if(is.na(stringi::stri_extract_first_words(document))){
+            collocate_locs <- "The document is empty"
+      } else {
       # Remove numerals
       if(remove_numerals == TRUE){
             document <- str_replace_all(document, "[0-9]", "")
@@ -79,7 +84,7 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
             names(collocate_locs) <- c("left_locs", "right_locs", "node", "node_hash", "node_recurrence", "doc_table", "all_locs")
             
             collocate_locs <- as(object = collocate_locs, Class = "collDB")
-      }
+      }} # closing brackets for two tests above (where the document is length 0 and where node_loc is length 0)
       
       
 
