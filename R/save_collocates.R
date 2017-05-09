@@ -41,7 +41,9 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
             return(empty_collDB)
       }
       # Test that the text is greater than length zero
-      if(is.na(stringi::stri_extract_first_words(document))){
+      anywords <- stringi::stri_extract_first_words(document) # Test for words
+      if(length(anywords > 1)){anywords <- anywords[1]} # If the object has multiple documents, use the first word
+      if(is.na(anywords)){
             # Print a warning
             if(length(names(document)) == 0){warning("The document has no content. Returned NA")
       } else {
