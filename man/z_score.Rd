@@ -4,8 +4,7 @@
 \alias{z_score}
 \title{A z-score calculates a probability score that compares the observed collocate frequency to its expected value}
 \usage{
-z_score(document, floor = 3, ngrams = 1, window, node,
-  remove_stops = TRUE, remove_numerals = TRUE, remove_punct = TRUE)
+z_score(document, floor = 3, ngrams = 1)
 }
 \arguments{
 \item{document}{A collDB, produced through save_collocates, or a text file}

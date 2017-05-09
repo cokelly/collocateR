@@ -7,10 +7,10 @@
 #' @export
 
 # This function is really about directing the phrases to the relevant unigram or multigram function
-get_freqs <- function(document, ngrams = 1, window, node, remove_stops = TRUE, remove_numerals = TRUE, remove_punct = TRUE){
+get_freqs <- function(document, ngrams = 1){
 
-      # Test the document and return a collDB list if it hasn't been done alread
-      document <- collDB_test(document, window, node, remove_stops, remove_numerals, remove_punct)
+      # Test taht the document is of class collDB
+      if(!is.collDB){stop("Use the save_collocates function to process the collocates in your document first")}
       
 # Test ngram lengths to send request for unigrams to the more efficient function
 # For unigrams

@@ -13,12 +13,12 @@
 #' @include get_freqs.R
 #' @keywords mutual information, collocates, kwic
 #' @export
-pmi <- function(document, floor = 3, ngrams = 1, window, node, remove_stops = TRUE, remove_numerals = TRUE, remove_punct = TRUE){
+pmi <- function(document, floor = 3, ngrams = 1){
 
-      # Test the document and return a collDB list if it hasn't been done already
-      document <- collDB_test(document, window, node, remove_stops, remove_numerals, remove_punct)
+      # Test taht the document is of class collDB
+      if(!is.collDB){stop("Use the save_collocates function to process the collocates in your document first")}
       # Get frequencies
-      freqs <- get_freqs(document, ngrams, window, node, remove_stops = TRUE, remove_numerals = TRUE, remove_punct = TRUE)
+      freqs <- get_freqs(document, ngrams)
       # Filter for floor
       freqs <- freqs %>% filter(coll_freq >= floor)
       

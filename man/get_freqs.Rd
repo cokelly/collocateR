@@ -4,8 +4,7 @@
 \alias{get_freqs}
 \title{Get raw frequencies for ngrams within the document}
 \usage{
-get_freqs(document, ngrams = 1, window, node, remove_stops = TRUE,
-  remove_numerals = TRUE, remove_punct = TRUE)
+get_freqs(document, ngrams = 1)
 }
 \arguments{
 \item{document}{A collDB, produced through save_collocates, or a text file}

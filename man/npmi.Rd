@@ -4,8 +4,7 @@
 \alias{npmi}
 \title{normalised pointwise mutual information: a significance test for keywords in context, normalised between 1 and -1}
 \usage{
-npmi(document, floor = 3, ngrams = 1, window, node, remove_stops = TRUE,
-  remove_numerals = TRUE, remove_punct = TRUE)
+npmi(document, floor = 3, ngrams = 1)
 }
 \arguments{
 \item{document}{A collDB, produced through save_collocates, or a text file}
