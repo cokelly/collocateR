@@ -19,7 +19,9 @@
 t_score <- function(document, floor = 3, ngrams = 1){
       
       # Test taht the document is of class collDB
-      if(!is.collDB){stop("Use the save_collocates function to process the collocates in your document first")}
+      if(!is.collDB(document)){
+            stop("Use the save_collocates function to process the collocates in your document before processing")
+            } else {
       # Get frequencies
       freqs <- get_freqs(document, ngrams)
       # Filter for floor
@@ -42,7 +44,7 @@ t_score <- function(document, floor = 3, ngrams = 1){
                         tscore = (freqs$coll_freq-expected)/sqrt(freqs$coll_freq)) # (Fn,c-E/sqrt(E(1-p)))
       
       t_score <- t_score %>% select(word, `collocate freq`, t_score = tscore) %>% arrange(desc(t_score))
-      }      
-      
+      }
       return(t_score)
+            }
 }

@@ -16,7 +16,9 @@
 pmi <- function(document, floor = 3, ngrams = 1){
 
       # Test taht the document is of class collDB
-      if(!is.collDB){stop("Use the save_collocates function to process the collocates in your document first")}
+      if(!is.collDB(document)){
+            stop("Use the save_collocates function to process the collocates in your document before processing")
+      } else {
       # Get frequencies
       freqs <- get_freqs(document, ngrams)
       # Filter for floor
@@ -34,4 +36,5 @@ pmi <- function(document, floor = 3, ngrams = 1){
             arrange(., desc(pmi))
       }
       return(pmi)
+      }
 }

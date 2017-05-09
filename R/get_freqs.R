@@ -10,7 +10,9 @@
 get_freqs <- function(document, ngrams = 1){
 
       # Test taht the document is of class collDB
-      if(!is.collDB){stop("Use the save_collocates function to process the collocates in your document first")}
+      if(!is.collDB(document)){
+            stop("Use the save_collocates function to process the collocates in your document before processing")
+            } else {
       
 # Test ngram lengths to send request for unigrams to the more efficient function
 # For unigrams
@@ -36,4 +38,5 @@ if(isTRUE(length(ngrams) > 1)){
             bind_rows
 }
       return(freqs)
+            }
 }
