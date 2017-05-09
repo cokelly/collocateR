@@ -22,9 +22,36 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
       if(node_length > ((window*2)+1)){ # longer than twice the window plus the keyword
             stop("Error: the node phrase is longer than the kwic window")
       }
+      # Create an empty collDB to return in the event of no collocates being found etc
+      return_empty_colldb <- function(){
+            left_locs <- list(rep(NA, 6))
+            right_locs <- list(rep(NA, 6))
+            node <- node
+            node_hash <- sha1(node)
+            node_recurrence <- NA
+            doc_table <- tibble(document) %>%
+                  tidytext::unnest_tokens(word,
+                                          document,
+                                          token = "ngrams",
+                                          n = 1)
+            all_locs <- list(rep(NA, 13))
+            
+            empty_collDB <- list(left_locs, right_locs, node, node_hash, node_recurrence, doc_table, all_locs)
+            empty_collDB <- as(object = empty_collDB, Class = "collDB")
+            return(empty_collDB)
+      }
       # Test that the text is greater than length zero
       if(is.na(stringi::stri_extract_first_words(document))){
-            collocate_locs <- "The document is empty"
+            # Print a warning
+            if(length(names(document)) == 0){warning("The document has no content. Returned NA")
+      } else {
+            warning(paste("The document \"", 
+                          names(document), 
+                          "\" has no content. Returned NA",
+                          sep = ""))
+      }
+            # # Return a collDB full of NAs
+            collocate_locs <- return_empty_colldb()
       } else {
       # Remove numerals
       if(remove_numerals == TRUE){
@@ -55,7 +82,16 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
       node_loc <- which(word.t == node1)
       # If there are no matches, just return a record that the node doesn't occur and issue a warning
       if(isTRUE(length(node_loc) == 0)){
-            collocate_locs <- "The node does not occur in this document"
+            # Print a warning
+            if(length(names(document)) == 0){warning("The node does not occur in this document. Returned NA")
+            } else {
+                  warning(paste("The node does not occur in the document \"",
+                                names(document),
+                                "\". Returned NA", 
+                                sep = ""))
+            }
+            # # Return a collDB full of NAs
+            collocate_locs <- return_empty_colldb()
       } else {
 # Isolate locations to left and right (could be more efficient, but might be useful in future 
 # for isolating left and right collocates)
