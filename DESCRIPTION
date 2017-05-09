@@ -8,6 +8,7 @@ License: GPLv3
 Encoding: UTF-8
 Collate: 
     'CollDB.R'
+    'ascollDB.R'
     'count_multigrams.R'
     'count_unigrams.R'
     'mins_to_maxs.R'

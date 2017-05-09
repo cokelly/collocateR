@@ -6,7 +6,7 @@
 
 as.collDB <- function(document){
       if(document == list &&
-         length(document == 7 &&)
+         length(document == 7) &&
          class(document[[1]]) == list && 
          class(document[[2]]) == list &&
          class(document[[3]]) == character &&
