@@ -62,8 +62,6 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
       if(remove_punct == TRUE){
             document <- str_replace_all(document, "[^[:alnum:]. ]", "")
       }
-      # To lower
-      document <- tolower(document)
       # Hash the node to to create a single phrase (and ensure stopwords contained in the
       # node aren't removed)
       node1 <- sha1(node)
@@ -79,7 +77,7 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
             stops <- quanteda::stopwords("english")
             `%notin%` = function(x,y) !(x %in% y)
             word.t <- word.t %>% dplyr::filter(., word %notin% stops)
-            }
+      }
       # Get locations of node
       node_loc <- which(word.t == node1)
       # If there are no matches, just return a record that the node doesn't occur and issue a warning
