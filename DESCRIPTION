@@ -15,6 +15,7 @@ Collate:
     'save_collocates.R'
     'get_freqs.R'
     'get_pmi.R'
+    'iscollDB.R'
     'pmi.R'
     'npmi.R'
     't_score.R'
