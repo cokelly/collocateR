@@ -1,19 +1,20 @@
 #' function to convert a list into a collDB
 #' 
 #' @param document The document to be analysed
+#' @importFrom tibble is.tibble
 #' @export
 
 
 as.collDB <- function(document){
-      if(document == list &&
-         length(document == 7) &&
-         class(document[[1]]) == list && 
-         class(document[[2]]) == list &&
-         class(document[[3]]) == character &&
-         class(document[[4]]) == character &&
-         class(document[[5]]) == integer &&
-         class(document[[6]]) == tbl_df &&
-         class(document[[7]]) == list){
+      if(is.list(document) &&
+         length(document) == 7 &&
+         is.list(document[[1]]) && 
+         is.list(document[[2]]) &&
+         is.character(document[[3]]) &&
+         is.character(document[[4]]) &&
+         is.integer(document[[5]]) &&
+         is.tibble(document[[6]]) &&
+         is.list(document[[7]])){
 document <- as(object = document, Class = "collDB")
 return(document)
       } else {
