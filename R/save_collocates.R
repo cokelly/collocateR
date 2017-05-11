@@ -62,6 +62,8 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
       if(remove_punct == TRUE){
             document <- str_replace_all(document, "[^[:alnum:]. ]", "")
       }
+      # To lower
+            document <- tolower(document)
       # Hash the node to to create a single phrase (and ensure stopwords contained in the
       # node aren't removed)
       node1 <- sha1(node)
