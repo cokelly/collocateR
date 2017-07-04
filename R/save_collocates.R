@@ -60,8 +60,8 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
             document <- str_replace_all(document, "[0-9]", "")
       }
       if(remove_punct == TRUE){
-            document <- gsub(".", " ", document)
-            document <- gsub("'", "", document)
+            document <- gsub("\\.", " ", document)
+            document <- gsub("\\'", "", document)
             document <- str_replace_all(document, "[^[:alnum:]]", " ")
       }
       # To lower
