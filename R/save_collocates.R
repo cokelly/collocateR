@@ -35,7 +35,7 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
                                           token = "ngrams",
                                           n = 1)
             all_locs <- list(rep(NA, 13))
-            
+
             empty_collDB <- list(left_locs, right_locs, node, node_hash, node_recurrence, doc_table, all_locs)
             empty_collDB <- as(object = empty_collDB, Class = "collDB")
             return(empty_collDB)
@@ -47,8 +47,8 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
             # Print a warning
             if(length(names(document)) == 0){warning("The document has no content. Returned NA")
       } else {
-            warning(paste("The document \"", 
-                          names(document), 
+            warning(paste("The document \"",
+                          names(document),
                           "\" has no content. Returned NA",
                           sep = ""))
       }
@@ -60,7 +60,9 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
             document <- str_replace_all(document, "[0-9]", "")
       }
       if(remove_punct == TRUE){
-            document <- str_replace_all(document, "[^[:alnum:]. ]", "")
+            document <- gsub(".", " ", document)
+            document <- gsub("'", "", document)
+            document <- str_replace_all(document, "[^[:alnum:]]", " ")
       }
       # To lower
             document <- tolower(document)
@@ -89,13 +91,13 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
             } else {
                   warning(paste("The node does not occur in the document \"",
                                 names(document),
-                                "\". Returned NA", 
+                                "\". Returned NA",
                                 sep = ""))
             }
             # # Return a collDB full of NAs
             collocate_locs <- return_empty_colldb()
       } else {
-# Isolate locations to left and right (could be more efficient, but might be useful in future 
+# Isolate locations to left and right (could be more efficient, but might be useful in future
 # for isolating left and right collocates)
             left_locs <- lapply(node_loc, function(x)
                   ((x-window):(x-1)))
@@ -114,17 +116,17 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
                               unlist(sapply(x,
                                           function(a)
                                                 ifelse(a %in% node_loc, yes = a <- NA, no = a <- a))))
-      
+
             # Now create a list of word sequences (useful for calculating multigrams)
             all_locs <- mins_to_maxs(list(left_locs, right_locs, node, node1, length(node_loc), word.t))
-            collocate_locs <- list(left_locs, right_locs, node, node1, length(node_loc), word.t, all_locs)      
-            
+            collocate_locs <- list(left_locs, right_locs, node, node1, length(node_loc), word.t, all_locs)
+
             names(collocate_locs) <- c("left_locs", "right_locs", "node", "node_hash", "node_recurrence", "doc_table", "all_locs")
-            
+
             collocate_locs <- as(object = collocate_locs, Class = "collDB")
       }} # closing brackets for two tests above (where the document is length 0 and where node_loc is length 0)
-      
-      
+
+
 
       return(collocate_locs)
 }
