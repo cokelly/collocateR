@@ -13,6 +13,7 @@
 #' @importFrom quanteda stopwords
 #' @importFrom stringr str_replace_all
 #' @importFrom stringi stri_extract_first_words
+#' @importFrom qdap strip
 #' @keywords collocates kwic
 #' @export
 
@@ -61,8 +62,9 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
       }
       if(remove_punct == TRUE){
             # Deal with "apostrophe-s".
-            document <- gsub("'s", "s", document, fixed = TRUE) # replace apostrophe-s with s
-            document <- gsub("’s", "s", document, fixed = TRUE) # replace apostrophe-s with s
+            
+            document <- str_replace_all(document, "[[:punct:]]s", "s")
+            document <- str_replace_all(document, "[[:punct:]]t", "t")
             document <- str_replace_all(document, "[^[:alnum:]]", " ")
       }
       # To lower
