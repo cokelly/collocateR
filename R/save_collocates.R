@@ -6,6 +6,7 @@
 #' @param remove_stops If TRUE, stopwords are removed (stopwords derived from quanteda package)
 #' @param remove_numerals If TRUE, numerals are removed
 #' @param remove_punct If TRUE, puntuation is removed
+#' @param stem Applies the default "porter" wordStem function from SnowballC
 #' @include mins_to_maxs.R
 #' @import dplyr
 #' @importFrom tidytext unnest_tokens
@@ -14,10 +15,11 @@
 #' @importFrom stringr str_replace_all
 #' @importFrom stringi stri_extract_first_words
 #' @importFrom qdap strip
+#' @importFrom SnowballC wordStem
 #' @keywords collocates kwic
 #' @export
 
-save_collocates <- function(document, window, node, remove_stops = TRUE, remove_numerals = TRUE, remove_punct = TRUE){
+save_collocates <- function(document, window, node, remove_stops = TRUE, remove_numerals = TRUE, remove_punct = TRUE, stem = TRUE){
       node_length <- length(unlist(strsplit(node, " ")))
       # Test to see if the node phrase is larger than the window
       if(node_length > ((window*2)+1)){ # longer than twice the window plus the keyword
@@ -73,12 +75,21 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
       # node aren't removed)
       node1 <- sha1(node)
       document <- gsub(x = document, pattern = paste("\\b", node, "\\b", sep = ""), replacement = node1)
-      # Unnest
-      word.t <- tibble(document) %>%
+      # Unnest (with stemming if required)
+      if(stem == TRUE){
+            word.t <- tibble(document) %>%
             tidytext::unnest_tokens(word,
                           document,
                           token = "ngrams",
-                          n = 1)
+                          n = 1) %>%
+                  mutate(word = wordStem(word))
+      } else {
+            word.t <- tibble(document) %>%
+                  tidytext::unnest_tokens(word,
+                                          document,
+                                          token = "ngrams",
+                                          n = 1)
+      }
       # If required remove stopwords
       if(remove_stops == TRUE){
             stops <- quanteda::stopwords("english")

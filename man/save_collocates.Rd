@@ -5,7 +5,7 @@
 \title{returns a list containing node locations, window locations, the node and its hash, and a doc_table}
 \usage{
 save_collocates(document, window, node, remove_stops = TRUE,
-  remove_numerals = TRUE, remove_punct = TRUE)
+  remove_numerals = TRUE, remove_punct = TRUE, stem = TRUE)
 }
 \arguments{
 \item{document}{The document to be analysed}
@@ -19,6 +19,8 @@ save_collocates(document, window, node, remove_stops = TRUE,
 \item{remove_numerals}{If TRUE, numerals are removed}
 
 \item{remove_punct}{If TRUE, puntuation is removed}
+
+\item{stem}{Applies the default "porter" wordStem function from SnowballC}
 }
 \description{
 returns a list containing node locations, window locations, the node and its hash, and a doc_table
