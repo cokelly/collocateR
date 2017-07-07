@@ -75,21 +75,13 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
       # node aren't removed)
       node1 <- sha1(node)
       document <- gsub(x = document, pattern = paste("\\b", node, "\\b", sep = ""), replacement = node1)
-      # Unnest (with stemming if required)
-      if(stem == TRUE){
-            word.t <- tibble(document) %>%
-            tidytext::unnest_tokens(word,
-                          document,
-                          token = "ngrams",
-                          n = 1) %>%
-                  mutate(word = wordStem(word))
-      } else {
+      # Tokenise into a tibble
             word.t <- tibble(document) %>%
                   tidytext::unnest_tokens(word,
                                           document,
                                           token = "ngrams",
                                           n = 1)
-      }
+      
       # If required remove stopwords
       if(remove_stops == TRUE){
             stops <- quanteda::stopwords("english")
@@ -98,6 +90,12 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
       }
       # Get locations of node
       node_loc <- which(word.t == node1)
+      
+      # Stem the document
+      if(stem == TRUE){
+      word.t <- word.t %>% mutate(word = SnowballC::wordStem(word))
+      }
+      
       # If there are no matches, just return a record that the node doesn't occur and issue a warning
       if(isTRUE(length(node_loc) == 0)){
             # Print a warning
