@@ -6,7 +6,7 @@
 #' @param remove_stops If TRUE, stopwords are removed (stopwords derived from quanteda package)
 #' @param remove_numerals If TRUE, numerals are removed
 #' @param remove_punct If TRUE, puntuation is removed
-#' @param stem Applies the default "porter" wordStem function from SnowballC
+#' @param stem Applies the default "porter" wordStem function from SnowballC. Default 'false'
 #' @include mins_to_maxs.R
 #' @import dplyr
 #' @importFrom tidytext unnest_tokens
@@ -19,11 +19,25 @@
 #' @keywords collocates kwic
 #' @export
 
-save_collocates <- function(document, window, node, remove_stops = TRUE, remove_numerals = TRUE, remove_punct = TRUE, stem = TRUE){
+save_collocates <- function(document, window, node, remove_stops = TRUE, remove_numerals = TRUE, remove_punct = TRUE, stem = FALSE){
       node_length <- length(unlist(strsplit(node, " ")))
       # Test to see if the node phrase is larger than the window
       if(node_length > ((window*2)+1)){ # longer than twice the window plus the keyword
             stop("Error: the node phrase is longer than the kwic window")
+      }
+      
+      # Warnings if various binary options are neither true nor false
+      if(remove_stops != TRUE & remove_stops != FALSE){
+            warning("remove_stops should be either TRUE or FALSE. Assuming FALSE")
+      }
+      if(remove_numerals != TRUE & remove_numerals != FALSE){
+            warning("remove_numerals should be either TRUE or FALSE. Assuming FALSE")
+      }
+      if(remove_punct != TRUE & remove_punct != FALSE){
+            warning("remove_punct should be either TRUE or FALSE. Assuming FALSE")
+      }
+      if(stem != TRUE & stem != FALSE){
+            warning("stem should be either TRUE or FALSE. Assuming FALSE")
       }
       # Create an empty collDB to return in the event of no collocates being found etc
       return_empty_colldb <- function(){
