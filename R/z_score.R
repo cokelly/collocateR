@@ -11,7 +11,6 @@
 #'
 #' @include CollDB.R count_unigrams.R
 #' @import tibble dplyr
-#' @importFrom magrittr "%>%"
 #' @include get_freqs.R
 #' @keywords zscore, collocates, kwic
 #' @export

@@ -10,7 +10,6 @@
 #' @include mins_to_maxs.R
 #' @import dplyr
 #' @importFrom tidytext unnest_tokens
-#' @importFrom digest sha1
 #' @importFrom quanteda stopwords
 #' @importFrom stringr str_replace_all
 #' @importFrom stringi stri_extract_first_words
@@ -44,7 +43,7 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
             left_locs <- list(rep(NA, 6))
             right_locs <- list(rep(NA, 6))
             node <- node
-            node_hash <- sha1(node)
+            node_hash <- NA
             node_recurrence <- NA
             doc_table <- tibble(document) %>%
                   tidytext::unnest_tokens(word,
@@ -64,10 +63,7 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
             # Print a warning
             if(length(names(document)) == 0){warning("The document has no content. Returned NA")
       } else {
-            warning(paste("The document \"",
-                          names(document),
-                          "\" has no content. Returned NA",
-                          sep = ""))
+            warning(paste("The document \"", names(document), "\" has no content. Returned NA", sep = ""))
       }
             # # Return a collDB full of NAs
             collocate_locs <- return_empty_colldb()
@@ -85,9 +81,13 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
       }
       # To lower
             document <- tolower(document)
-      # Hash the node to to create a single phrase (and ensure stopwords contained in the
+      # Remove spaces from the node to to create a single phrase (and ensure stopwords contained in the
       # node aren't removed)
-      node1 <- sha1(node)
+            if(length(unlist(strsplit(node, " "))) > 1){
+      node1 <- str_replace_all(node, " ", "")
+            } else {
+                  node1 <- node
+            }
       document <- gsub(x = document, pattern = paste("\\b", node, "\\b", sep = ""), replacement = node1)
       # Tokenise into a tibble
             word.t <- tibble(document) %>%
@@ -98,16 +98,19 @@ save_collocates <- function(document, window, node, remove_stops = TRUE, remove_
       
       # If required remove stopwords
       if(remove_stops == TRUE){
-            stops <- quanteda::stopwords("english")
-            `%notin%` = function(x,y) !(x %in% y)
-            word.t <- word.t %>% dplyr::filter(., word %notin% stops)
+            stops <- quanteda::stopwords("english") %>%
+              as_tibble %>%
+              rename(word = value)
+            word.t <- word.t %>%
+              anti_join(, stops, by = word)
       }
       # Get locations of node
       node_loc <- which(word.t == node1)
       
       # Stem the document
       if(stem == TRUE){
-      word.t <- word.t %>% mutate(word = SnowballC::wordStem(word))
+      word.t <- word.t %>%
+        mutate(word = SnowballC::wordStem(word))
       }
       
       # If there are no matches, just return a record that the node doesn't occur and issue a warning
