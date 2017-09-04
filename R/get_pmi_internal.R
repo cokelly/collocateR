@@ -15,7 +15,7 @@ pattern_recurrence <- freqs[[2]]
 wordlength <- freqs[[3]]
 freqs <- freqs[[1]]
 
-freqs <- freqs %>% filter(`kwic freqs` >= floor)
+freqs <- freqs %>% filter(`kwic freqs` <= floor)
 
 probx <- pattern_recurrence/wordlength
 proby <- freqs$`doc freqs`/wordlength

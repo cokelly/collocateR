@@ -12,58 +12,24 @@
  
 get_collocates <- function(document, pattern, window = 5, ngram = 1, remove_stopwords = TRUE, cache = FALSE){
   # Ensure there are no spaces in the pattern
-if(isTRUE(length(unlist(strsplit(pattern, " "))) > 1)){
-  pattern_no_spaces <- gsub(" ", "_", pattern)
-} else {
-  pattern_no_spaces <- pattern
+if(length(ngram) == 1 && ngram == 1){
+  doc_locations <- get_unigrams(document = document, pattern = pattern, window = window, remove_stopwords = remove_stopwords, cache = cache)
+  doc.t2 <- doc_locations[[1]]
+  pattern_locations <- doc_locations[[2]]
 }
-
-doc <- gsub(pattern, pattern_no_spaces, doc)
-
-# Turn doc into tibble
-doc.t <- doc %>% as_tibble %>%
-  unnest_tokens(.,
-                word,
-                value,
-                token = "ngrams",
-                n = ngram)
-# Add a column of row numbers for sensemaking purposes (see after anti_join below)
-row_numbers <- 1:nrow(doc.t)
-
-doc.t <- doc.t %>%
-  add_column(`row numbers` = row_numbers, .before = "word")
-
-if(isTRUE(remove_stopwords)){
-  # Get tidytext stops
-  data("stop_words")
-  suppressMessages(doc.t2 <- doc.t %>%
-    anti_join(stop_words))
-
-
-#Next is just a bit of a sensemaking line, aimed at the sometimes odd arrangement of lines after the anti_join. See https://github.com/tidyverse/dplyr/issues/2964
-
-doc.t2 <- doc.t2 %>% arrange(`row numbers`) %>% 
-  select(word)
-} else {
-  doc.t2 <- doc.t
+  
+if(length(ngram) == 1 && ngram > 1){
+  doc_locations <- get_multigrams(document = document, pattern = pattern, ngram = ngram, window = window, remove_stopwords = remove_stopwords, cache = cache) 
+  doc.t2 <- doc_locations[[1]]
+  pattern_locations <- doc_locations[[2]]
 }
-# Which row numbers match the pattern
-pattern_locations <- which(doc.t2$word == pattern_no_spaces)
+  
+  # For ngram of length >1 we're going to have to do a x %in% 1 and then map over the multigrams
+  
+  if(length(pattern_locations) == 0){
+    warning("This document does not contain the pattern")
+  } else { # the remainder calculates freqs if the pattern is found
 
-# Message if the pattern is not found
-if(isTRUE(length(pattern_locations) == 0)){
-  message("No pattern match in this document")
-  collocates <- NULL
-} else { # the remainder calculates freqs if the pattern is found
-
-# Shorten window if required so as to ensure only bigrams within the range are returned
-  if(ngram > 1){
-  window0 <- window/ngram
-  if(isTRUE(odd(floor(window0)))){
-    window <- floor(window0)+1
-  } else {
-    window <- window0
-  }}
   
 all_locations <- pattern_locations %>%
   map(., function(x) (x-window):(x-1)) %>%

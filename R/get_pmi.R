@@ -1,12 +1,12 @@
 #' pointwise mutual information: internal function (for use in pmi and npmi functions)
 #' 
 #' @param document A collDB, produced through save_collocates, or a text file
-#' @param pattern
-#' @param window
-#' @param ngram
-#' @param floor
-#' @param remove_stopwords
-#' @param cache
+#' @param pattern A character vector containing a keyword 
+#' @param window The number of context words to be displayed around the keyword Default 5
+#' @param ngram The size of phrases the frequencies of which we are to test (so, unigram = 1, bigram = 2, trigram = 3 etc) 
+#' @param remove_stopwords Remove stopwords from the document (based on tidytext's stopwords data). Default TRUE.
+#' @param cache Organising collocates is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process.
+#' @param floor A frequency cutoff for words or phrases to test
 #' @include get_freqs_internal.R
 #' @import tibble dplyr
 #' @keywords mutual information, collocates, kwic
@@ -21,7 +21,7 @@ pattern_recurrence <- freqs[[2]]
 wordlength <- freqs[[3]]
 freqs <- freqs[[1]]
 
-freqs <- freqs %>% filter(`kwic freqs` >= floor)
+freqs <- freqs %>% filter(`kwic freqs` <= floor)
 
 probx <- pattern_recurrence/wordlength
 proby <- freqs$`doc freqs`/wordlength
