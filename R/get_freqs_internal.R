@@ -1,4 +1,4 @@
-#' Get raw frequencies for ngrams within the document
+#' Get raw frequencies for ngrams within the document (plus wordcount for internal use)
 #' 
 #' @param doc A character vector or list of character vectors
 #' @param pattern A character vector containing a keyword 
@@ -12,9 +12,9 @@
 #' @export
 
 # This function is really about directing the phrases to the relevant unigram or multigram function
-get_freqs <- function(document, pattern, window = 6, ngram = 1, remove_stopwords = TRUE, cache = FALSE){
-
-  collocates <- get_collocates(document, pattern = pattern, window = window, ngram = ngram, remove_stopwords = remove_stopwords)
+get_freqs2 <- function(document, pattern, window = 5, ngram = 1, remove_stopwords = TRUE, cache = FALSE){
+  
+  collocates <- get_collocates(document = document, pattern = pattern, window = window, ngram = ngram, remove_stopwords = remove_stopwords)
   
   full_doc <- collocates[[1]]
   kwics <- collocates[[2]]
@@ -28,6 +28,6 @@ get_freqs <- function(document, pattern, window = 6, ngram = 1, remove_stopwords
     rename(`kwic freqs` = n.y) %>%
     arrange(desc(`kwic freqs`))
   
-  return(freqs)
+  freqs.l <- list(freqs, collocates[[3]], collocates[[4]])
+  return(freqs.l)
 }
-  

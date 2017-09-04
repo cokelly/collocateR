@@ -7,31 +7,19 @@
 #' @param remove_stops OPTIONAL If TRUE, stopwords are removed (stopwords derived from tidytext package). Not required if importing a collDB from save_collocates
 #' @param remove_numerals OPTIONAL If TRUE, numerals are removed. Not required if importing a collDB from save_collocates
 #' @param remove_punct OPTIONAL If TRUE, puntuation is removed. Not required if importing a collDB from save_collocates
-#' @include CollDB.R save_collocates.R pmi.R
+#' @include get_pmi_internal.R
 #' @import tibble dplyr
 #' @keywords mutual information, collocates, kwic
 #' @export
-npmi <- function(document, floor = 3, ngrams = 1){
+get_npmi <- function(document, pattern, window = 5, ngram = 1, floor = 3, remove_stopwords = TRUE, cache = FALSE){
       
-      ## Test taht the document is of class collDB
-      if(!is.collDB(document)){
-            stop("Use the save_collocates function to process the collocates in your document before processing")
-            } else {
-      # Get frequencies
-      freqs <- get_freqs(document, ngrams)
-      # Filter for floor
-      freqs <- freqs %>% filter(coll_freq >= floor)
+      ## get pmi using get_pmi_internal
+      pmi <- get_pmi2(document = document, pattern = pattern, window = window, ngram = ngram, remove_stopwords = remove_stopwords, cache = cache)
       
-      if(nrow(freqs) == 0){
-            npmi <- "No collocates. Try setting the floor at a lower level"
-      } else {
-      pmis <- get_pmi(document, freqs)
-      
-      npmi <- pmis %>%
-            add_column(npmi = pmis$pmi/(-log(pmis$probxy))) %>%
+      npmi <- pmi %>%
+            add_column(npmi = pmi$pmi/(-log(pmi$probxy))) %>%
             dplyr::select(phrase, npmi) %>% 
             arrange(., desc(npmi))
-}
+
 return(npmi)
-            }
 }

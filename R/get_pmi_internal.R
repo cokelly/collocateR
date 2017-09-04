@@ -1,19 +1,13 @@
 #' pointwise mutual information: internal function (for use in pmi and npmi functions)
 #' 
 #' @param document A collDB, produced through save_collocates, or a text file
-#' @param pattern
-#' @param window
-#' @param ngram
-#' @param floor
-#' @param remove_stopwords
-#' @param cache
-#' @include get_freqs_internal.R
+#' @param freqs collocate and document frequencies
 #' @import tibble dplyr
 #' @keywords mutual information, collocates, kwic
 
-get_pmi <- function(document, pattern, window = 6, ngram = 1, floor = 3, remove_stopwords = TRUE, cache = FALSE){
+get_pmi2 <- function(document, pattern, window = 6, ngram = 1, floor = 3, remove_stopwords = TRUE, cache = FALSE){
   
-  # Get frequencies using the internal algorithm (which returns wordcounts etc from get_collocates)
+  
 freqs <-  get_freqs2(document = document, pattern = pattern, window = window, ngram = ngram, remove_stopwords = remove_stopwords, cache = cache)
   
 # Assemble the bases for calculating pmi
@@ -32,7 +26,7 @@ pmi <- tibble(probx = rep(probx, length(proby))) %>%
   add_column(probxy) %>%
   add_column(pmi = log(probxy/(probx*proby))) %>%
   add_column(phrase = freqs$word, .before = "probx") %>%
-  select(phrase, pmi) %>%
+  select(phrase, probxy, pmi) %>%
   arrange(desc(pmi))
 
 return(pmi)
