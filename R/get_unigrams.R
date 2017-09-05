@@ -8,7 +8,7 @@
 #' @param cache Organising collocates is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Deault FALSE.
 #' @include get_collocates.R
 #' @import dplyr tibble
-#' @importFrom tidytext unnest_tokens stop_words
+#' @importFrom tidytext unnest_tokens
 #' @keywords frequencies
 #'
 #'

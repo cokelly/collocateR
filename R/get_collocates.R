@@ -6,7 +6,7 @@
 #' @param ngram The size of phrases the frequencies of which we are to test (so, unigram = 1, bigram = 2, trigram = 3 etc) 
 #' @param remove_stopwords Remove stopwords from the document (based on tidytext's stopwords data). Default TRUE.
 #' @param cache Organising collocates is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process.
-#' @import tidytext dplyr purr memoise tibble
+#' @import tidytext dplyr purrr memoise tibble
 #' @keywords frequencies
  
 get_collocates <- function(document, pattern, window = 5, ngram = 1, remove_stopwords = TRUE, cache = FALSE){
