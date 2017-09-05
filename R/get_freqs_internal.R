@@ -7,9 +7,8 @@
 #' @param remove_stopwords Remove stopwords from the document (based on tidytext's stopwords data). Default TRUE.
 #' @param cache Organising collocates is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Deault FALSE.
 #' @include get_collocates.R
-#' @import dplyr
+#' @import dplyr tibble
 #' @keywords frequencies
-#' @export
 
 # This function is really about directing the phrases to the relevant unigram or multigram function
 get_freqs2 <- function(document, pattern, window = 5, ngram = 1, remove_stopwords = TRUE, cache = FALSE){

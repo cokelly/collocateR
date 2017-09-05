@@ -1,8 +1,17 @@
+#' Internal formula for processing unigrams
+#' 
+#' @param doc A character vector or list of character vectors
+#' @param pattern A character vector containing a keyword 
+#' @param window The number of context words to be displayed around the keyword Default 5
+#' @param ngram The size of phrases the frequencies of which we are to test (so, unigram = 1, bigram = 2, trigram = 3 etc) 
+#' @param remove_stopwords Remove stopwords from the document (based on tidytext's stopwords data). Default TRUE.
+#' @param cache Organising collocates is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Deault FALSE.
+#' @include get_collocates.R
+#' @import dplyr tibble
+#' @importFrom tidytext unnest_tokens stop_words
+#' @keywords frequencies
 #'
 #'
-#'@param 
-#'
-
 get_unigrams <- function(document, pattern, window, remove_stopwords, cache){
   
   # If the pattern has more than one word

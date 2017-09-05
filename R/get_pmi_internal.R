@@ -1,7 +1,14 @@
-#' pointwise mutual information: internal function (for use in pmi and npmi functions)
+#' pointwise mutual information: internal function (for use in pmi and npmi functions) Internal function, retains more from the collocates process
 #' 
-#' @param document A collDB, produced through save_collocates, or a text file
-#' @param freqs collocate and document frequencies
+#' @param document Acharacter vector or list of character vectors
+#' @param node A key word or phrase to test
+#' @param window The number of context words to be displayed around the keyword Default 5
+#' @param ngram The size of phrases the frequencies of which we are to test (so, unigram = 1, bigram = 2, trigram = 3 etc) 
+#' @param floor Collocates that occur fewer times than floor will be removed
+
+#' @param remove_stopwords Remove stopwords from the document (based on tidytext's stopwords data). Default TRUE.
+#' @param cache Organising collocates is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Default FALSE.
+#' @include get_freqs_internal.R
 #' @import tibble dplyr
 #' @keywords mutual information, collocates, kwic
 

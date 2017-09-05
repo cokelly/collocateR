@@ -1,8 +1,17 @@
 #' This function does not aim to replace the more thorough function from the Quanteda package. Instead it simply returns a tibble of KWICs arranged by row.
-#'@param 
+#' Internal formula for processing multigrams
 #' 
-#'@param import dplyr purr
-#'@param export
+#' @param document A character vector or list of character vectors
+#' @param pattern A character vector containing a keyword 
+#' @param window The number of context words to be displayed around the keyword Default 5
+#' @param ngram The size of phrases the frequencies of which we are to test (so, unigram = 1, bigram = 2, trigram = 3 etc) 
+#' @param remove_stopwords Remove stopwords from the document (based on tidytext's stopwords data). Default TRUE.
+#' @param cache Organising collocates is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Deault FALSE.
+#' @include get_collocates.R
+#' @import dplyr tibble
+#' @importFrom tidytext unnest_tokens stop_words
+#' @keywords keywords in context
+#' @export
 
 simple_kwic <- function(document, pattern, window = 5, ngram = 1, remove_stopwords = TRUE, cache = FALSE){
   
