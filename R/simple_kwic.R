@@ -6,18 +6,17 @@
 #' @param window The number of context words to be displayed around the keyword Default 5
 #' @param ngram The size of phrases the frequencies of which we are to test (so, unigram = 1, bigram = 2, trigram = 3 etc) 
 #' @param remove_stopwords Remove stopwords from the document (drawn from tidytext's stopwords data). Default TRUE.
+#' @param remove_numerals Remove numerals
 #' @param cache Organising collocates is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Deault FALSE.
-#' @include get_collocates.R
+#' @include internal_get_collocates.R
 #' @import dplyr tibble
 #' @importFrom tidytext unnest_tokens
 #' @keywords keywords in context
 #' @export
 
-simple_kwic <- function(document, pattern, window = 5, ngram = 1, remove_stopwords = TRUE, 
-                        cache = FALSE) {
+simple_kwic <- function(document, pattern, window = 5, ngram = 1, remove_stopwords = TRUE, remove_numerals = TRUE, cache = FALSE) {
   
-  collocates <- get_collocates(document, pattern = pattern, window = 5, ngram = 1, 
-                               remove_stopwords = TRUE, cache = FALSE)
+  collocates <- get_collocates(document, pattern, window = window, ngram = ngram, remove_stopwords = remove_stopwords, remove_numerals = remove_numerals, cache = cache)
   
   kwic <- collocates[[2]]
   # this returns a single column tibble that I want to split back into relevant columns

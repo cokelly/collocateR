@@ -6,7 +6,7 @@
 Internal formula for processing multigrams}
 \usage{
 simple_kwic(document, pattern, window = 5, ngram = 1,
-  remove_stopwords = TRUE, cache = FALSE)
+  remove_stopwords = TRUE, remove_numerals = TRUE, cache = FALSE)
 }
 \arguments{
 \item{document}{A character vector or list of character vectors}
@@ -17,7 +17,9 @@ simple_kwic(document, pattern, window = 5, ngram = 1,
 
 \item{ngram}{The size of phrases the frequencies of which we are to test (so, unigram = 1, bigram = 2, trigram = 3 etc)}
 
-\item{remove_stopwords}{Remove stopwords from the document (based on tidytext's stopwords data). Default TRUE.}
+\item{remove_stopwords}{Remove stopwords from the document (drawn from tidytext's stopwords data). Default TRUE.}
+
+\item{remove_numerals}{Remove numerals}
 
 \item{cache}{Organising collocates is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Deault FALSE.}
 }

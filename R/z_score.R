@@ -5,6 +5,7 @@
 #' @param window The number of context words to be displayed around the keyword Default 5
 #' @param ngram The size of phrases the frequencies of which we are to test (so, unigram = 1, bigram = 2, trigram = 3 etc) 
 #' @param remove_stopwords Remove stopwords from the document (based on tidytext's stopwords data). Default TRUE.
+#' @param remove_numerals remove numerals
 #' @param cache Organising collocates is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Default FALSE.
 
 #' @import tibble dplyr
@@ -12,10 +13,10 @@
 #' @keywords z_score, collocates, kwic
 #' @export
 
-z_score <- function(document, pattern, window = 5, ngram = 1, floor = 3, remove_stopwords = TRUE, cache = FALSE){
+z_score <- function(document, pattern, window = 5, ngram = 1, floor = 3, remove_stopwords = TRUE, remove_numerals = TRUE, cache = FALSE){
   
   # Get frequencies
-  freqs <- get_freqs2(document = document, pattern = pattern, window = window, ngram = ngram, remove_stopwords = remove_stopwords, cache = cache)
+  freqs <- get_freqs2(document = document, pattern = pattern, window = window, ngram = ngram, remove_stopwords = remove_stopwords, remove_numerals = remove_numerals, cache = cache)
   
   pattern_occurrences <- freqs[[2]]
   wordcount <- freqs[[3]]

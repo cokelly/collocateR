@@ -5,7 +5,7 @@
 \title{Get raw frequencies for ngrams within the document}
 \usage{
 get_freqs(document, pattern, window = 6, ngram = 1,
-  remove_stopwords = TRUE, cache = FALSE)
+  remove_stopwords = TRUE, remove_numerals = TRUE, cache = FALSE)
 }
 \arguments{
 \item{pattern}{A character vector containing a keyword}
@@ -15,6 +15,8 @@ get_freqs(document, pattern, window = 6, ngram = 1,
 \item{ngram}{The size of phrases the frequencies of which we are to test (so, unigram = 1, bigram = 2, trigram = 3 etc)}
 
 \item{remove_stopwords}{Remove stopwords from the document (based on tidytext's stopwords data). Default TRUE.}
+
+\item{remove_numerals}{Remove numerals.}
 
 \item{cache}{Organising collocates is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Deault FALSE.}
 

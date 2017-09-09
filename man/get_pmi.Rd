@@ -5,7 +5,7 @@
 \title{pointwise mutual information: internal function (for use in pmi and npmi functions)}
 \usage{
 get_pmi(document, pattern, window = 6, ngram = 1, floor = 3,
-  remove_stopwords = TRUE, cache = FALSE)
+  remove_stopwords = TRUE, remove_numerals = TRUE, cache = FALSE)
 }
 \arguments{
 \item{document}{Acharacter vector or list of character vectors}
@@ -17,6 +17,8 @@ get_pmi(document, pattern, window = 6, ngram = 1, floor = 3,
 \item{floor}{Collocates that occur fewer times than floor will be removed}
 
 \item{remove_stopwords}{Remove stopwords from the document (based on tidytext's stopwords data). Default TRUE.}
+
+\item{remove_numerals}{Remove numerals}
 
 \item{cache}{Organising collocates is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Default FALSE.}
 

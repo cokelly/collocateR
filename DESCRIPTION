@@ -7,14 +7,15 @@ Depends: R (>= 3.4)
 License: GPLv3
 Encoding: UTF-8
 Collate: 
-    'get_collocates.R'
+    'internal_get_collocates.R'
     'get_freqs.R'
-    'get_freqs_internal.R'
-    'get_multigrams.R'
-    'get_pmi_internal.R'
+    'internal_get_freqs.R'
+    'internal_get_pmi.R'
     'get_npmi.R'
     'get_pmi.R'
-    'get_unigrams.R'
+    'internal_get_multigrams.R'
+    'internal_get_unigrams.R'
+    'internal_remove_stops.R'
     'simple_kwic.R'
     't_score.R'
     'z_score.R'

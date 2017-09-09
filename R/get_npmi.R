@@ -7,17 +7,18 @@
 #' @param floor Collocates that occur fewer times than floor will be removed
 
 #' @param remove_stopwords Remove stopwords from the document (based on tidytext's stopwords data). Default TRUE.
+#' @param remove_numerals Remove numerals
 #' @param cache Organising collocates is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Default FALSE.
-#' @include get_pmi_internal.R
+#' @include internal_get_pmi.R
 #' @import tibble dplyr
 #' @keywords mutual information, collocates, kwic
 #' @export
 
 
-get_npmi <- function(document, pattern, window = 5, ngram = 1, floor = 3, remove_stopwords = TRUE, cache = FALSE){
+get_npmi <- function(document, pattern, window = 6, ngram = 1, floor = 3, remove_stopwords = TRUE, remove_numerals = TRUE,  cache = FALSE){
       
       ## get pmi using get_pmi_internal
-      pmi <- get_pmi2(document = document, pattern = pattern, window = window, ngram = ngram, remove_stopwords = remove_stopwords, cache = cache)
+      pmi <- get_pmi2(document = document, pattern = pattern, window = window, ngram = ngram, floor = floor, remove_stopwords = remove_stopwords, remove_numerals = remove_numerals, cache = cache)
       
       npmi <- pmi %>%
             add_column(npmi = pmi$pmi/(-log(pmi$probxy))) %>%
