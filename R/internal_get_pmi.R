@@ -13,8 +13,7 @@
 #' @import tibble dplyr
 #' @keywords mutual information, collocates, kwic
 
-get_pmi2 <- function(document, pattern, window = 6, ngram = 1, floor = 3, remove_stopwords = TRUE, remove_numerals = TRUE,  cache = FALSE){
-  
+get_pmi2 <- function(document, pattern, window = 6, ngram = ngram, floor = 3, remove_stopwords = TRUE, remove_numerals = TRUE,  cache = FALSE){
   
 freqs <-  get_freqs2(document = document, pattern = pattern, window = window, ngram = ngram, remove_stopwords = remove_stopwords, remove_numerals = remove_numerals, cache = cache)
   

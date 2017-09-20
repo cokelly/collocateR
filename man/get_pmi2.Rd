@@ -4,7 +4,7 @@
 \alias{get_pmi2}
 \title{pointwise mutual information: internal function (for use in pmi and npmi functions) Internal function, retains more from the collocates process}
 \usage{
-get_pmi2(document, pattern, window = 6, ngram = 1, floor = 3,
+get_pmi2(document, pattern, window = 6, ngram = ngram, floor = 3,
   remove_stopwords = TRUE, remove_numerals = TRUE, cache = FALSE)
 }
 \arguments{

@@ -4,7 +4,7 @@
 \alias{get_freqs2}
 \title{Get raw frequencies for ngrams within the document (plus wordcount for internal use)}
 \usage{
-get_freqs2(document, pattern, window = 5, ngram = 1,
+get_freqs2(document, pattern, window = 5, ngram = ngram,
   remove_stopwords = TRUE, remove_numerals, cache = FALSE)
 }
 \arguments{

@@ -12,7 +12,7 @@
 #' @keywords frequencies
 
 # This function is really about directing the phrases to the relevant unigram or multigram function
-get_freqs2 <- function(document, pattern, window = 5, ngram = 1, remove_stopwords = TRUE, remove_numerals, cache = FALSE){
+get_freqs2 <- function(document, pattern, window = 5, ngram = ngram, remove_stopwords = TRUE, remove_numerals, cache = FALSE){
   
   collocates <- get_collocates(document = document, pattern = pattern, window = window, ngram = ngram, remove_stopwords = remove_stopwords, remove_numerals = remove_numerals, cache = cache)
   

@@ -33,7 +33,7 @@ get_multigrams <- function(document = document, pattern = pattern, window = wind
   
 
   if(isTRUE(remove_stopwords)){
-    doc.t3 <- remove_stops(document)
+    doc.t3 <- remove_stops(document, ngram)
   } else { # if remove_stopwords is false
     # a tibble of ngrams
   doc.t3 <- document %>% as_tibble %>%
