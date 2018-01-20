@@ -1,48 +1,43 @@
 #' pointwise mutual information: internal function (for use in pmi and npmi functions)
 #' 
-#' @param document Acharacter vector or list of character vectors
-#' @param node A key word or phrase to test
+#' @param doc Acharacter vector or list of character vectors
+#' @param keyword A key word or phrase to test
 #' @param window The number of context words to be displayed around the keyword Default 5
 #' @param ngram The size of phrases the frequencies of which we are to test (so, unigram = 1, bigram = 2, trigram = 3 etc) 
-#' @param floor Collocates that occur fewer times than floor will be removed
-
-#' @param remove_stopwords Remove stopwords from the document (based on tidytext's stopwords data). Default TRUE.
-#' @param remove_numerals Remove numerals
+#' @param min_count Collocates that occur fewer times than floor will be removed
 #' @param cache Organising collocates is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Default FALSE.
-#' @include internal_get_freqs.R
-#' @import tibble dplyr
+#' @include get_freqs.R
+#' @import tibble dplyr memoise
 #' @keywords mutual information, collocates, kwic
 #' @export
 
-get_pmi <- function(document, pattern, window = 6, ngram = 1, floor = 3, remove_stopwords = TRUE, remove_numerals = TRUE,  cache = FALSE){
-  
-  # Get frequencies using the internal algorithm (which returns wordcounts etc from get_collocates)
-freqs <-  get_freqs2(document = document, pattern = pattern, window = window, ngram = ngram, remove_stopwords = remove_stopwords, remove_numerals = remove_numerals, cache = cache)
-  
-# Assemble the bases for calculating pmi
-pattern_recurrence <- freqs[[2]]
-wordlength <- freqs[[3]]
-freqs <- freqs[[1]]
+get_pmi <- function(doc, keyword, window = 6, ngram = 1, min_count = 2, cache = FALSE){
 
-freqs <- freqs %>% filter(`kwic freqs` >= floor)
+      # Get wordcount and the number of times the keyword recurs
 
-
-if(nrow(freqs) == 0){
-  pmi <- "No collocates. Try setting the floor at a lower level"
+        # Get collocate frequencies
+if(cache == TRUE){
+      mget_freqs <- memoise::memoise(get_freqs)
+      freqs <-  mget_freqs(doc = doc, keyword = keyword, window = window, ngram = ngram, min_count = min_count, cache = cache)
 } else {
-  
-
-probx <- pattern_recurrence/wordlength
-proby <- freqs$`doc freqs`/wordlength
-probxy <- freqs$`kwic freqs`/wordlength
-
-pmi <- tibble(probx = rep(probx, length(proby))) %>%
-  add_column(proby) %>%
-  add_column(probxy) %>%
-  add_column(pmi = log(probxy/(probx*proby))) %>%
-  add_column(phrase = freqs$word, .before = "probx") %>%
-  select(phrase, pmi) %>%
-  arrange(desc(pmi))
+freqs <-  get_freqs(doc = doc, keyword = keyword, window = window, ngram = ngram, min_count = min_count, cache = cache)
 }
+wordcount <- as.integer(sum(str_count(doc, "\\S+")))
+#It would be easier and perhaps more efficient to count the below from the documentary source with sum(str_count(keyword, " ")) but this returns a higher count than the kwic function, than tibble%>%unnest_tokens%>%summarise etc
+keyword_recurrence <- freqs %>% 
+      filter(ngram == keyword) %>%
+      select(`Document Frequency`) %>% 
+      unlist %>% 
+      as.integer
+      
+# Calculate the pmi
+pmi <- freqs %>%
+      mutate(probx = as.integer(keyword_recurrence)/wordcount) %>%
+      mutate(proby = as.integer(`Document Frequency`)/wordcount) %>% 
+      mutate(probxy = as.integer(`Collocate Frequency`)/wordcount) %>%
+      mutate(pmi = log(probxy/(probx*proby))) %>%
+      arrange(desc(pmi)) %>%
+      select(ngram, pmi)
+
 return(pmi)
 }

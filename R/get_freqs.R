@@ -1,34 +1,87 @@
-#' Get raw frequencies for ngrams within the document
+#' Extract frequencies for the keywords in context and the full document
 #' 
 #' @param doc A character vector or list of character vectors
-#' @param pattern A character vector containing a keyword 
+#' @param keyword A key word or phrase to test
 #' @param window The number of context words to be displayed around the keyword Default 5
 #' @param ngram The size of phrases the frequencies of which we are to test (so, unigram = 1, bigram = 2, trigram = 3 etc) 
-#' @param remove_stopwords Remove stopwords from the document (based on tidytext's stopwords data). Default TRUE.
-#' @param remove_numerals Remove numerals.
-#' @param cache Organising collocates is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Deault FALSE.
-#' @include internal_get_collocates.R
-#' @import dplyr tibble
-#' @keywords frequencies
+#' @param min_count Collocates that occur fewer times than floor will be removed
+#' @param cache Getting frequencies is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Default FALSE.
+#' @include remove_duplicates.R
+#' @import tibble magrittr dplyr quanteda
+#' @importFrom stringr str_split str_detect
+#' @importFrom quanteda stopwords
+#' @keywords mutual information, collocates, kwic
 #' @export
 
-# This function is really about directing the phrases to the relevant unigram or multigram function
-get_freqs <- function(document, pattern, window = 6, ngram = 1, remove_stopwords = TRUE, remove_numerals = TRUE, cache = FALSE){
 
-  collocates <- get_collocates(document, pattern = pattern, window = window, ngram = ngram, remove_stopwords = remove_stopwords, remove_numerals = remove_numerals)
-  
-  full_doc <- collocates[[1]]
-  kwics <- collocates[[2]]
-  
-  kwic_words <- kwics %>%
-    count(word)
-  
-  freqs <- (all_freqs = full_doc %>% count(word)) %>%
-    inner_join(., kwic_words, by = "word") %>%
-    rename(`doc freqs` = n.x) %>%
-    rename(`kwic freqs` = n.y) %>%
-    arrange(desc(`kwic freqs`))
-  
-  return(freqs)
+
+get_freqs <- function(doc, keyword, window = 6, ngram = 1, min_count = 2, cache = TRUE){
+
+      # If the doc is a list, unlist it.
+      # If it is not a character vector, stop.
+      if(is.list(doc) == TRUE){
+            doc <- unlist(doc)
+      }
+      if(is_character(doc) != TRUE){
+            stop("collocateR will only act on character vectors (for now).")
+      }
+      if(length(doc) > 1 && unique(map(doc, length)) == 1){
+            doc <- paste(doc, sep = " ", collapse = " ")
+      }
+      
+      # Sanity check that the window is a double
+window <- as.double(window)
+      # ...and that the keyword exists
+if(!exists("keyword")){stop("Please supply a keyword")}
+
+print("Generating a KeyWords In Context matrix...")
+
+if(length(unlist(str_split(keyword, " "))) == 1){
+kwics<- doc %>% unlist %>%
+      quanteda::kwic(., pattern = keyword, window = window, valuetype = "fixed")
+} else {
+      kwics<- doc %>% unlist %>%
+            quanteda::kwic(., pattern = phrase(keyword), window = window, valuetype = "fixed")
 }
-  
+kwics <- as.matrix(kwics)
+      
+      
+if(isTRUE(nrow(kwics) == 0)){stop(print(paste("No collocates for the phrase", keyword, "were found in this document.\nIf you lemmatised the document, be sure to lemmatise the keyword", sep = " ")))}
+
+print("...done.")
+
+print("Getting collocate and document frequencies...")
+
+kwics_processed <- kwics %>% remove_duplicates(., keyword, window)
+
+sentence_end_marker <- kwics_processed[[1]]
+kwics2 <- kwics_processed[[2]]
+
+kwics_string <- paste(kwics2$word, sep = " ", collapse = " ")
+
+print("Extracting collocate ngram frequencies...")
+if(ngram == 1){
+      collocates <- kwics_string %>% as_tibble %>% unnest_tokens(., ngram, value) %>% group_by(ngram) %>% summarise(`Collocate Frequency` = n()) %>% filter(`Collocate Frequency` >= min_count) %>% arrange(desc(`Collocate Frequency`))
+} else {
+      if(ngram > 1){
+            print("(it may take a moment to extract multigram frequencies)")
+      collocates <- kwics_string %>% quanteda::textstat_collocations(., size = ngram, min_count = min_count) %>% as_tibble %>% select(ngram = collocation, `Collocate Frequency` = count) %>% arrange(desc(`Collocate Frequency`))
+      } else {
+      stop("Ngrams must be a positive number.")
+      }
+}
+print("...done")
+# Remove rows containing sentence end or beginning boundaries. 
+boundaries <- str_detect(collocates$ngram, sentence_end_marker)
+collocates <- collocates[which(boundaries == FALSE),]
+
+# Get the corresponding frequencies for the whole document
+# First cut out useless words from the docs
+print("Extracting full document ngram frequencies...")
+docs_freqs <- x <- doc %>% as_tibble %>% unnest_tokens(., ngram, value, token = "ngrams", n = ngram) %>% filter(ngram %in% collocates$ngram) %>% group_by(ngram) %>% summarise(`Document Frequency` = n()) %>% ungroup
+print("...done")
+collocates <- full_join(collocates, docs_freqs, by = "ngram")
+
+
+return(collocates)
+}

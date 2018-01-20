@@ -2,27 +2,28 @@
 % Please edit documentation in R/get_freqs.R
 \name{get_freqs}
 \alias{get_freqs}
-\title{Get raw frequencies for ngrams within the document}
+\title{Extract frequencies for the keywords in context and the full document}
 \usage{
-get_freqs(document, pattern, window = 6, ngram = 1,
-  remove_stopwords = TRUE, remove_numerals = TRUE, cache = FALSE)
+get_freqs(doc, keyword, window = 6, ngram = 1, min_count = 2,
+  cache = TRUE)
 }
 \arguments{
-\item{pattern}{A character vector containing a keyword}
+\item{doc}{A character vector or list of character vectors}
+
+\item{keyword}{A key word or phrase to test}
 
 \item{window}{The number of context words to be displayed around the keyword Default 5}
 
 \item{ngram}{The size of phrases the frequencies of which we are to test (so, unigram = 1, bigram = 2, trigram = 3 etc)}
 
-\item{remove_stopwords}{Remove stopwords from the document (based on tidytext's stopwords data). Default TRUE.}
+\item{min_count}{Collocates that occur fewer times than floor will be removed}
 
-\item{remove_numerals}{Remove numerals.}
-
-\item{cache}{Organising collocates is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Deault FALSE.}
-
-\item{doc}{A character vector or list of character vectors}
+\item{cache}{Getting frequencies is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Default FALSE.}
 }
 \description{
-Get raw frequencies for ngrams within the document
+Extract frequencies for the keywords in context and the full document
 }
-\keyword{frequencies}
+\keyword{collocates,}
+\keyword{information,}
+\keyword{kwic}
+\keyword{mutual}

@@ -4,25 +4,21 @@
 \alias{get_pmi}
 \title{pointwise mutual information: internal function (for use in pmi and npmi functions)}
 \usage{
-get_pmi(document, pattern, window = 6, ngram = 1, floor = 3,
-  remove_stopwords = TRUE, remove_numerals = TRUE, cache = FALSE)
+get_pmi(doc, keyword, window = 6, ngram = 1, min_count = 2,
+  cache = FALSE)
 }
 \arguments{
-\item{document}{Acharacter vector or list of character vectors}
+\item{doc}{Acharacter vector or list of character vectors}
+
+\item{keyword}{A key word or phrase to test}
 
 \item{window}{The number of context words to be displayed around the keyword Default 5}
 
 \item{ngram}{The size of phrases the frequencies of which we are to test (so, unigram = 1, bigram = 2, trigram = 3 etc)}
 
-\item{floor}{Collocates that occur fewer times than floor will be removed}
-
-\item{remove_stopwords}{Remove stopwords from the document (based on tidytext's stopwords data). Default TRUE.}
-
-\item{remove_numerals}{Remove numerals}
+\item{min_count}{Collocates that occur fewer times than floor will be removed}
 
 \item{cache}{Organising collocates is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Default FALSE.}
-
-\item{node}{A key word or phrase to test}
 }
 \description{
 pointwise mutual information: internal function (for use in pmi and npmi functions)
