@@ -16,7 +16,7 @@
 
 
 
-get_freqs <- function(doc, keyword, window = 6, ngram = 1, min_count = 2, cache = TRUE){
+internal_get_freqs <- function(doc, keyword, window = 6, ngram = 1, min_count = 2, cache = TRUE){
     # If ngrams are smaller than the keyword size, swap out the keyword for the moment.
     if(ngram < length(unlist(str_split(keyword, " ")))){
         managed_keyword <- internal_manage_keyword(doc, keyword)
@@ -52,9 +52,10 @@ kwics<- doc %>% unlist %>%
             quanteda::kwic(., pattern = phrase(keyword), window = window, valuetype = "fixed")
 }
 kwics <- as.matrix(kwics)
+# Best moment to get the measure below. Then return it for other functions.
+keyword_recurrence <- nrow(kwics)
       
-      
-if(isTRUE(nrow(kwics) == 0)){stop(print(paste("No collocates for the phrase", keyword, "were found in this document.\nIf you lemmatised the document, be sure to lemmatise the keyword", sep = " ")))}
+if(isTRUE(keyword_recurrence == 0)){stop(print(paste("No collocates for the phrase", keyword, "were found in this document.\nIf you lemmatised the document, be sure to lemmatise the keyword", sep = " ")))}
 
 print("...done.")
 
@@ -88,14 +89,17 @@ collocates <- collocates[which(boundaries == FALSE),]
 print("Extracting full document ngram frequencies...")
 docs_freqs <- x <- doc %>% as_tibble %>% unnest_tokens(., ngram, value, token = "ngrams", n = ngram) %>% filter(ngram %in% collocates$ngram) %>% group_by(ngram) %>% summarise(`Document Frequency` = n()) %>% ungroup
 print("...done")
+
+
+
 collocates <- full_join(collocates, docs_freqs, by = "ngram")
 
-
-# If ngrams are smaller than the keyword size, return the keyword to the original.
+# # If ngrams are smaller than the keyword size, return the keyword to the original.
 if(exists("original_keyword")){
-    collocates <- collocates %>%
-        mutate(ngram = case_when(ngram == keyword ~ str_replace(ngram, keyword, original_keyword), ngram != keyword ~ ngram))
+     collocates <- collocates %>%
+         mutate(ngram = case_when(ngram == keyword ~ str_replace(ngram, keyword, original_keyword), ngram != keyword ~ ngram))
 }
 
-return(collocates)
+
+return(list(collocates, keyword_recurrence))
 }

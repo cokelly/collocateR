@@ -13,29 +13,24 @@
 
 get_pmi <- function(doc, keyword, window = 6, ngram = 1, min_count = 2, cache = FALSE){
 
-      # Get wordcount and the number of times the keyword recurs
 
-        # Get collocate frequencies
-if(cache == TRUE){
-      mget_freqs <- memoise::memoise(get_freqs)
-      freqs <-  mget_freqs(doc = doc, keyword = keyword, window = window, ngram = ngram, min_count = min_count, cache = cache)
-} else {
-freqs <-  get_freqs(doc = doc, keyword = keyword, window = window, ngram = ngram, min_count = min_count, cache = cache)
-}
-wordcount <- as.integer(sum(str_count(doc, "\\S+")))
-#It would be easier and perhaps more efficient to count the below from the documentary source with sum(str_count(keyword, " ")) but this returns a higher count than the kwic function, than tibble%>%unnest_tokens%>%summarise etc
-keyword_recurrence <- freqs %>% 
-      filter(ngram == keyword) %>%
-      select(`Document Frequency`) %>% 
-      unlist %>% 
-      as.integer
+      # Get collocate frequencies
+      if(cache == TRUE){
+            mget_freqs <- memoise::memoise(internal_get_freqs)
+            freqs0 <-  mget_freqs(doc = doc, keyword = keyword, window = window, ngram = ngram, min_count = min_count, cache = cache)
+      } else {
+            freqs0 <-  internal_get_freqs(doc = doc, keyword = keyword, window = window, ngram = ngram, min_count = min_count, cache = cache)
+      }
+      freqs <- freqs0[[1]]
+      keyword_recurrence <- freqs0[[2]]
+      wordcount <- sum(str_count(doc, "\\S+"))
       
 # Calculate the pmi
 pmi <- freqs %>%
-      mutate(probx = as.integer(keyword_recurrence)/wordcount) %>%
-      mutate(proby = as.integer(`Document Frequency`)/wordcount) %>% 
-      mutate(probxy = as.integer(`Collocate Frequency`)/wordcount) %>%
-      mutate(pmi = log(probxy/(probx*proby))) %>%
+      mutate(probx = as.numeric(keyword_recurrence/wordcount)) %>%
+      mutate(proby = as.numeric(`Document Frequency`/wordcount)) %>% 
+      mutate(probxy = as.numeric(`Collocate Frequency`/wordcount)) %>%
+      mutate(pmi = as.numeric(log(probxy/(probx*proby)))) %>%
       arrange(desc(pmi)) %>%
       select(ngram, pmi)
 
