@@ -10,7 +10,7 @@
 #' @import tibble dplyr memoise
 #' @keywords mutual information, collocates, kwic
 
-internal_get_pmi <- function(doc, keyword, window = 6, ngram = 1, min_count = 2, cache = FALSE){
+internal_get_pmi <- function(doc, keyword, window = window, ngram = ngram, min_count = min_count, cache = FALSE){
  
       # Get collocate frequencies
       if(cache == TRUE){

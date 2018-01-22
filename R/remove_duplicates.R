@@ -1,11 +1,12 @@
 #' Extract frequencies for the keywords in context and the full document
 #' 
 #' @param collocates A kwic matrix
+#' @param keyword A character vector containing a keyword 
+#' @param window The number of context words to be displayed around the keyword Default 6
 #' @import tibble dplyr
 #' @importFrom stringr str_count
 #' @importFrom purrr map map2
 #' @importFrom tidytext unnest_tokens
-#' @importFrom tidyr unnest
 #' @importFrom stringr str_split
 #' @keywords mutual information, collocates, kwic
 #' @export

@@ -2,7 +2,7 @@
 #' 
 #' @param doc A character vector or list of character vectors
 #' @param keyword A key word or phrase to test
-#' @param window The number of context words to be displayed around the keyword Default 5
+#' @param window The number of context words to be displayed around the keyword Default 6
 #' @param ngram The size of phrases the frequencies of which we are to test (so, unigram = 1, bigram = 2, trigram = 3 etc) 
 #' @param min_count Collocates that occur fewer times than floor will be removed
 #' @param cache Getting frequencies is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Default FALSE.
@@ -16,7 +16,7 @@
 
 
 
-internal_get_freqs <- function(doc, keyword, window = 6, ngram = 1, min_count = 2, cache = TRUE){
+internal_get_freqs <- function(doc, keyword, window = window, ngram = ngram, min_count = min_count, cache = TRUE){
     # If ngrams are smaller than the keyword size, swap out the keyword for the moment.
     if(ngram < length(unlist(str_split(keyword, " ")))){
         managed_keyword <- internal_manage_keyword(doc, keyword)

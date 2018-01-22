@@ -2,7 +2,7 @@
 #' 
 #' @param doc Acharacter vector or list of character vectors
 #' @param keyword A key word or phrase to test
-#' @param window The number of context words to be displayed around the keyword Default 5
+#' @param window The number of context words to be displayed around the keyword Default 6
 #' @param ngram The size of phrases the frequencies of which we are to test (so, unigram = 1, bigram = 2, trigram = 3 etc) 
 #' @param min_count Collocates that occur fewer times than floor will be removed
 #' @param cache Organising collocates is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Default FALSE.
