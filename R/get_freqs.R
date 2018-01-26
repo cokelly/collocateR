@@ -7,7 +7,8 @@
 #' @param min_count Collocates that occur fewer times than floor will be removed
 #' @param cache Getting frequencies is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Default FALSE.
 #' @include remove_duplicates.R
-#' @import tibble magrittr dplyr quanteda
+#' @import tibble magrittr dplyr
+#' @importFrom utils globalVariables
 #' @importFrom stringr str_split str_detect str_replace
 #' @importFrom quanteda stopwords
 #' @importFrom purrr is_character
@@ -15,8 +16,11 @@
 #' @export
 
 
+## quiets concerns of R CMD check re: the .'s that appear in pipelines
+if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "value", "Collocate Frequency", "collocation"))
 
 get_freqs <- function(doc, keyword, window = 6, ngram = 1, min_count = 2, cache = TRUE){
+
     # If ngrams are smaller than the keyword size, swap out the keyword for the moment.
     if(ngram < length(unlist(str_split(keyword, " ")))){
         managed_keyword <- internal_manage_keyword(doc, keyword)

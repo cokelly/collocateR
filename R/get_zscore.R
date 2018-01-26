@@ -7,9 +7,13 @@
 #' @param min_count The minimum frequency to include in the score
 #' @param cache Organising collocates is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Default FALSE.
 #' @import tibble dplyr
+#' @importFrom utils globalVariables
+#' @importFrom stringr str_split
 #' @include get_freqs.R
 #' @keywords z_score, collocates, kwic
 #' @export
+
+if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "Document Frequency", "prob", "expected", "z score"))
 
 get_zscore <- function(doc, keyword, window = 6, ngram = 1, min_count = 2, cache = FALSE){
   

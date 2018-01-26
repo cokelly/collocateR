@@ -4,8 +4,8 @@
 \alias{internal_get_pmi}
 \title{pointwise mutual information: internal function (for use in pmi and npmi functions)}
 \usage{
-internal_get_pmi(doc, keyword, window = 6, ngram = 1, min_count = 2,
-  cache = FALSE)
+internal_get_pmi(doc, keyword, window = window, ngram = ngram,
+  min_count = min_count, cache = FALSE)
 }
 \arguments{
 \item{doc}{Acharacter vector or list of character vectors}

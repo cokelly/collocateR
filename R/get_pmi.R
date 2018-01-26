@@ -8,8 +8,11 @@
 #' @param cache Organising collocates is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Default FALSE.
 #' @include get_freqs.R
 #' @import tibble dplyr memoise
+#' @importFrom utils globalVariables
 #' @keywords mutual information, collocates, kwic
 #' @export
+
+if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "Document Frequency", "probxy", "probx", "proby"))
 
 get_pmi <- function(doc, keyword, window = 6, ngram = 1, min_count = 2, cache = FALSE){
 
