@@ -12,8 +12,7 @@
 #' @importFrom tidyr unnest
 #' @keywords mutual information, collocates, kwic
 
-## quiets concerns of R CMD check re: the .'s that appear in pipelines
-if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "pre", "post", "full_window0", "from", "to", "docname", "full_window", "left_locs", "right_locs", "word", "all_locs00", "all_locs0"))
+
 
 remove_duplicates <- function(collocates, keyword = keyword, window = window){ # Remove duplicates
       # Create lists of locations to left and right

@@ -16,9 +16,6 @@
 #' @export
 
 
-## quiets concerns of R CMD check re: the .'s that appear in pipelines
-if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "value", "Collocate Frequency", "collocation"))
-
 get_freqs <- function(doc, keyword, window = 6, ngram = 1, min_count = 2, cache = TRUE){
 
     # If ngrams are smaller than the keyword size, swap out the keyword for the moment.

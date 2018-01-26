@@ -17,7 +17,8 @@ Imports:
 	tidyr
 License: GPL
 Encoding: UTF-8
-Collate:
+Collate: 
+    'collocateR.R'
     'remove_duplicates.R'
     'get_freqs.R'
     'get_npmi.R'

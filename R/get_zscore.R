@@ -13,7 +13,7 @@
 #' @keywords z_score, collocates, kwic
 #' @export
 
-if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "Document Frequency", "prob", "expected", "z score"))
+
 
 get_zscore <- function(doc, keyword, window = 6, ngram = 1, min_count = 2, cache = FALSE){
   
