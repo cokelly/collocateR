@@ -4,7 +4,5 @@ sudo: false
 r: 
   - release
   - devel
-r_github_packages:
-  - hadley/devtools
 warnings_are_errors: true
 
