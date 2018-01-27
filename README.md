@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/cokelly/collocateR.svg?branch=master)](https://travis-ci.org/cokelly/collocateR)
+[![Build Status](https://travis-ci.org/cokelly/collocateR.svg?branch=master)](https://travis-ci.org/cokelly/collocateR)  [![DOI](https://zenodo.org/badge/54512562.svg)](https://zenodo.org/badge/latestdoi/54512562)
 
 # CollocateR
 
