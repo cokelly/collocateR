@@ -1,12 +1,10 @@
 language: r
+cache: packages
 warnings_are_errors: true
 sudo: true
-
-r_github_packages:
-    hadley/devtools
-
-    cache: packages
-
  r:
   - release
   - devel
+r_github_packages:
+    hadley/devtools
+
