@@ -3,12 +3,10 @@ warnings_are_errors: true
 sudo: false
 
 r_github_packages:
-    devtools
+    hadley/devtools
 
     cache: packages
 
  r:
   - release
   - devel
-r_github_packages:
-  hadley/devtools@ec2858b
