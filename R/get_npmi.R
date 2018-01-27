@@ -8,6 +8,7 @@
 #' @param cache Organising collocates is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Default FALSE.
 #' @include get_freqs.R
 #' @import tibble dplyr memoise
+#' @importFrom utils globalVariables
 #' @keywords mutual information, collocates, kwic
 #' @export
 

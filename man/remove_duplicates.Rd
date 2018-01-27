@@ -8,6 +8,10 @@ remove_duplicates(collocates, keyword = keyword, window = window)
 }
 \arguments{
 \item{collocates}{A kwic matrix}
+
+\item{keyword}{A character vector containing a keyword}
+
+\item{window}{The number of context words to be displayed around the keyword Default 6}
 }
 \description{
 Extract frequencies for the keywords in context and the full document

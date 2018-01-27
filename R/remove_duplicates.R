@@ -7,9 +7,10 @@
 #' @importFrom stringr str_count
 #' @importFrom purrr map map2
 #' @importFrom tidytext unnest_tokens
-#' @importFrom stringr str_split
+#' @importFrom stringr str_split 
+#' @importFrom utils globalVariables
+#' @importFrom tidyr unnest
 #' @keywords mutual information, collocates, kwic
-#' @export
 
 
 
@@ -68,7 +69,7 @@ remove_duplicates <- function(collocates, keyword = keyword, window = window){ #
             mutate(all_locs0 = map(all_locs00, unique)) %>% # exclude any duplicates from the kwic function
             mutate(all_locs = map(all_locs0, addNA)) %>%
             select(docname, all_locs) %>%
-            unnest(., all_locs) # flatten the lists
+            tidyr::unnest(., all_locs) # flatten the lists
       collocates_and_locs_no_duplicates <- bind_cols(all_collocates, all_locs) %>%
             # Select only relevant columns for identifying duplicates
             select(docname, word, location = all_locs) %>%

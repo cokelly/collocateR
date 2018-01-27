@@ -8,19 +8,17 @@ get_zscore(doc, keyword, window = 6, ngram = 1, min_count = 2,
   cache = FALSE)
 }
 \arguments{
-\item{window}{The number of context words to be displayed around the keyword Default 5}
+\item{doc}{A character vector or list of character vectors}
+
+\item{keyword}{A character vector containing a keyword}
+
+\item{window}{The number of context words to be displayed around the keyword Default 6}
 
 \item{ngram}{The size of phrases the frequencies of which we are to test (so, unigram = 1, bigram = 2, trigram = 3 etc)}
 
+\item{min_count}{The minimum frequency to include in the score}
+
 \item{cache}{Organising collocates is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Default FALSE.}
-
-\item{document}{A character vector or list of character vectors}
-
-\item{pattern}{A character vector containing a keyword}
-
-\item{remove_stopwords}{Remove stopwords from the document (based on tidytext's stopwords data). Default TRUE.}
-
-\item{remove_numerals}{remove numerals}
 }
 \description{
 A z-score calculates a probability score that compares the observed collocate frequency to its expected value

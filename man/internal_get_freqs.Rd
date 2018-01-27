@@ -4,15 +4,15 @@
 \alias{internal_get_freqs}
 \title{Extract frequencies for the keywords in context and the full document}
 \usage{
-internal_get_freqs(doc, keyword, window = 6, ngram = 1, min_count = 2,
-  cache = TRUE)
+internal_get_freqs(doc, keyword, window = window, ngram = ngram,
+  min_count = min_count, cache = TRUE)
 }
 \arguments{
 \item{doc}{A character vector or list of character vectors}
 
 \item{keyword}{A key word or phrase to test}
 
-\item{window}{The number of context words to be displayed around the keyword Default 5}
+\item{window}{The number of context words to be displayed around the keyword Default 6}
 
 \item{ngram}{The size of phrases the frequencies of which we are to test (so, unigram = 1, bigram = 2, trigram = 3 etc)}
 

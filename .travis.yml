@@ -10,3 +10,5 @@ r_github_packages:
  r:
   - release
   - devel
+r_github_packages:
+  hadley/devtools@ec2858b
