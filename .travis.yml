@@ -1,7 +1,12 @@
 language: r
 warnings_are_errors: true
-sudo: required
-cache: packages
-r:
+sudo: false
+
+r_github_packages:
+    devtools
+
+    cache: packages
+
+ r:
   - release
   - devel
