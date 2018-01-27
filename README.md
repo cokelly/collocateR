@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/cokelly/collocateR.svg?branch=master)](https://travis-ci.org/cokelly/collocateR)
+
 # CollocateR
 
 CollocateR is a package for the statistical programming language [R](https://www.r-project.org/).
