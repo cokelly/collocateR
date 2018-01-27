@@ -17,7 +17,7 @@ CollocateR serves a simple purpose. It processes collocates for keywords in cont
 - **npmi**: as above, but normalised so all results occur between 1 (perfect collocation) and -1 (the terms never collocate).
 - **z-score**: a probability test comparing probability of collocate occurring in near the node versus its occurrence across the text
 
-For information on various scores, see [![here](http://rdues.bcu.ac.uk/bncweb/manual/bncwebman-collocation.htm)]
+For information on various scores, see [here](http://rdues.bcu.ac.uk/bncweb/manual/bncwebman-collocation.htm)
 
 ## TODO
 
