@@ -5,7 +5,7 @@
 \title{Extract frequencies for the keywords in context and the full document}
 \usage{
 internal_get_freqs(doc, keyword, window = window, ngram = ngram,
-  min_count = min_count, cache = TRUE)
+  min_count = min_count, cache = cache)
 }
 \arguments{
 \item{doc}{A character vector or list of character vectors}

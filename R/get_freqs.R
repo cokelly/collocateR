@@ -16,10 +16,10 @@
 #' @export
 
 
-get_freqs <- function(doc, keyword, window = 6, ngram = 1, min_count = 2, cache = TRUE){
+get_freqs <- function(doc, keyword, window = 6, ngram = 1, min_count = 2, cache = FALSE){
 
       # start off by sanitising the document
-      doc <- doc %>% sanitise_doc
+      doc <- sanitise_doc(doc)
       
     # If ngrams are smaller than the keyword size, swap out the keyword for the moment.
     if(ngram < length(unlist(str_split(keyword, " ")))){
