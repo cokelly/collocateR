@@ -39,6 +39,14 @@ remove_duplicates <- function(collocates, keyword = keyword, window = window){ #
             container_string <- paste(container_string, sep = " ", collapse = " ")
             return(container_string)
       }
+      # This is a pretty hacky way to do this, but I assume that the error here situates a single extra word at the end of the string (infering from observation)
+      shorten_strings <- function(string){
+            container_list <- as.list(rep(NA, times = expected_window_span))
+            divided_string <- container_list[[length(container_list)]] <- sentence_end_marker
+            container_string <- unlist(lapply(seq(1:(length(container_list)-1)), function(x) container_list[[x]] <- divided_string[x]))
+            container_string <- paste(container_string, sep = " ", collapse = " ")
+            return(container_string)
+      }
       # Columns for full window, left locations and right locations
       collocate_windows_and_locs <- collocates %>%
             as_tibble %>% 
@@ -46,30 +54,39 @@ remove_duplicates <- function(collocates, keyword = keyword, window = window){ #
             mutate(full_window0 = paste(pre, keyword, post, sentence_end_marker)) %>%
             # What word length is the string?
             mutate(full_window_span = str_count(full_window0, "\\S+")) %>% 
+            #If the string's word length is longeer than expected (reasons unknown) then shorten the string 
+            dplyr::mutate(full_window = dplyr::case_when(full_window_span > expected_window_span ~ shorten_strings(full_window0), full_window_span == expected_window_span ~ full_window0)) %>% 
             #If the string's word length is shorter than expected (an artefact of a Kwic being at the document's start or end) then fill with NAs 
-            dplyr::mutate(full_window = dplyr::case_when(full_window_span < expected_window_span ~ lengthen_strings(full_window0), full_window_span == expected_window_span ~full_window0)) %>% 
+            dplyr::mutate(full_window = dplyr::case_when(full_window_span < expected_window_span ~ lengthen_strings(full_window0), full_window_span == expected_window_span ~ full_window0)) %>% 
             # left locs
             dplyr::mutate(left_locs = purrr::map(from, .f = process_left)) %>% 
             # right locs
             dplyr::mutate(right_locs = purrr::map(to, .f = process_right)) %>% 
             # select relevant cols
             select(docname, from, to, full_window, left_locs, right_locs)
+      
       # Place all collocate words in a column 
-      all_collocates <- collocate_windows_and_locs$full_window %>% 
-            as_tibble %>% 
-            tidytext::unnest_tokens(., word, value)
+      all_collocates <- collocate_windows_and_locs %>% 
+            tidytext::unnest_tokens(., word, full_window) %>%
+            select(word)
       # A short function to add NA to the end of a list. Necessary because we added an end marker at the end of each string above.
+      random_locs_marker <- paste("randomlocsproxy", stringi::stri_rand_strings(1, 100, "[0-9]"), sep = "")
       addNA <- function(list){
-            list_with_na <- list %>% c(., paste(stringi::stri_rand_strings(1, 15, "[A-Za-z]"), stringi::stri_rand_strings(1, 150, "[0-9]")))
+            list_with_na <- list %>% c(., random_locs_marker)
             return(list_with_na)
       }
       # Place all locations in a list, along with docnames
       all_locs <- collocate_windows_and_locs %>% 
-            mutate(all_locs00 = map2(left_locs, right_locs, .f = c)) %>% # put the two windows sides together (can intervene here if I want to identify left or right collocates in future)
-            mutate(all_locs0 = map(all_locs00, unique)) %>% # exclude any duplicates from the kwic function
+            # put the two windows sides together (can intervene here if I want to identify left or right collocates in future)
+            mutate(all_locs00 = map2(left_locs, right_locs, .f = c)) %>% 
+            # exclude any duplicates from the kwic function
+            mutate(all_locs0 = map(all_locs00, unique)) %>% 
             mutate(all_locs = map(all_locs0, addNA)) %>%
             select(docname, all_locs) %>%
-            tidyr::unnest(., all_locs) # flatten the lists
+            # flatten the lists
+            tidyr::unnest(., all_locs) 
+      
+      # A function for removing duplicates 
       collocates_and_locs_no_duplicates <- bind_cols(all_collocates, all_locs) %>%
             # Select only relevant columns for identifying duplicates
             select(docname, word, location = all_locs) %>%
@@ -79,7 +96,8 @@ remove_duplicates <- function(collocates, keyword = keyword, window = window){ #
             ungroup %>% 
             # Return words only
             select(word)
-      processed_collocates <- list(sentence_end_marker, collocates_and_locs_no_duplicates)
+     
+       processed_collocates <- list(sentence_end_marker, collocates_and_locs_no_duplicates)
       
       return(processed_collocates)
 }
