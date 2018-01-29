@@ -34,10 +34,6 @@ get_freqs <- function(doc, keyword, window = 6, ngram = 1, min_count = 2, cache 
       if(is_character(doc) != TRUE){
             stop("collocateR will only act on character vectors (for now).")
       }
-      if(length(doc) > 1 && unique(map(doc, length)) == 1){
-            doc <- paste(doc, sep = " ", collapse = " ")
-      }
-      
       # Sanity check that the window is a double
 window <- as.double(window)
       # ...and that the keyword exists
