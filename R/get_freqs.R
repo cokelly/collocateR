@@ -18,6 +18,9 @@
 
 get_freqs <- function(doc, keyword, window = 6, ngram = 1, min_count = 2, cache = TRUE){
 
+      # start off by sanitising the document
+      doc <- doc %>% sanitise_doc
+      
     # If ngrams are smaller than the keyword size, swap out the keyword for the moment.
     if(ngram < length(unlist(str_split(keyword, " ")))){
         managed_keyword <- internal_manage_keyword(doc, keyword)
