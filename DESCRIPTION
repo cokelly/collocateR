@@ -27,4 +27,5 @@ Collate:
     'internal_get_freqs.R'
     'internal_get_pmi.R'
     'internal_manage_keyword.R'
+    'sanitise_doc.R'
 RoxygenNote: 6.0.1
