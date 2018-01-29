@@ -58,7 +58,7 @@ remove_duplicates <- function(collocates, keyword = keyword, window = window){ #
       all_collocates <- collocate_windows_and_locs$full_window %>% 
             as_tibble %>% 
             tidytext::unnest_tokens(., word, value)
-      # A short function to add NA to the end of a list. Necessary because we added a end marker at the end of each string above.
+      # A short function to add NA to the end of a list. Necessary because we added an end marker at the end of each string above.
       addNA <- function(list){
             list_with_na <- list %>% c(., paste(stringi::stri_rand_strings(1, 15, "[A-Za-z]"), stringi::stri_rand_strings(1, 150, "[0-9]")))
             return(list_with_na)
