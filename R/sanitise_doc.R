@@ -13,9 +13,9 @@ sanitise_doc <- function(doc){
       doc <- stringr::str_replace_all(doc, "[\r\n]", " ")
       doc <- stringr::str_replace_all(doc, "-", " ")
       doc <- stringr::str_replace_all(doc, "'s", "s")
-      doc <- stringr::str_replace_all(doc, "’s", "s")
+      doc <- stringr::str_replace_all(doc, "<92>s", "s")
       doc <- stringr::str_replace_all(doc, "'t", "t")
-      doc <- stringr::str_replace_all(doc, "’t", "t")
+      doc <- stringr::str_replace_all(doc, "<92>t", "t")
       doc <- stringr::str_replace_all(doc, "[^[:alpha:] ]", " ")
       return(doc)
 }
