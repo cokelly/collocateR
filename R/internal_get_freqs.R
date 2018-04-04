@@ -46,8 +46,6 @@ window <- as.double(window)
       # ...and that the keyword exists
 if(!exists("keyword")){stop("Please supply a keyword")}
 
-print("Generating a KeyWords In Context matrix...")
-
 if(length(unlist(str_split(keyword, " "))) == 1){
 kwics<- doc %>% unlist %>%
       quanteda::kwic(., pattern = keyword, window = window, valuetype = "fixed")
@@ -61,10 +59,6 @@ keyword_recurrence <- nrow(kwics)
       
 if(isTRUE(keyword_recurrence == 0)){stop(print(paste("No collocates for the phrase", keyword, "were found in this document.\nIf you lemmatised the document, be sure to lemmatise the keyword", sep = " ")))}
 
-print("...done.")
-
-print("Getting collocate and document frequencies...")
-
 kwics_processed <- kwics %>% remove_duplicates(., keyword, window)
 
 sentence_end_marker <- kwics_processed[[1]]
@@ -72,29 +66,22 @@ kwics2 <- kwics_processed[[2]]
 
 kwics_string <- paste(kwics2$word, sep = " ", collapse = " ")
 
-print("Extracting collocate ngram frequencies...")
 if(ngram == 1){
       collocates <- kwics_string %>% as_tibble %>% unnest_tokens(., ngram, value) %>% group_by(ngram) %>% summarise(`Collocate Frequency` = n()) %>% filter(`Collocate Frequency` >= min_count) %>% arrange(desc(`Collocate Frequency`))
 } else {
       if(ngram > 1){
-            print("(it may take a moment to extract multigram frequencies)")
       collocates <- kwics_string %>% quanteda::textstat_collocations(., size = ngram, min_count = min_count) %>% as_tibble %>% select(ngram = collocation, `Collocate Frequency` = count) %>% arrange(desc(`Collocate Frequency`))
       } else {
       stop("Ngrams must be a positive number.")
       }
 }
-print("...done")
 # Remove rows containing sentence end or beginning boundaries. 
 boundaries <- str_detect(collocates$ngram, sentence_end_marker)
 collocates <- collocates[which(boundaries == FALSE),]
 
 # Get the corresponding frequencies for the whole document
 # First cut out useless words from the docs
-print("Extracting full document ngram frequencies...")
 docs_freqs <- x <- doc %>% as_tibble %>% unnest_tokens(., ngram, value, token = "ngrams", n = ngram) %>% filter(ngram %in% collocates$ngram) %>% group_by(ngram) %>% summarise(`Document Frequency` = n()) %>% ungroup
-print("...done")
-
-
 
 collocates <- full_join(collocates, docs_freqs, by = "ngram")
 
