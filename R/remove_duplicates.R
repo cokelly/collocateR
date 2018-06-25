@@ -87,12 +87,13 @@ remove_duplicates <- function(collocates, keyword = keyword, window = window){ #
             tidyr::unnest(., all_locs) 
       
       # A function for removing duplicates 
-      collocates_and_locs_no_duplicates <- bind_cols(all_collocates, all_locs) %>%
+      collocates_and_locs_no_duplicates0 <- bind_cols(all_collocates, all_locs) %>%
             # Select only relevant columns for identifying duplicates
             select(docname, word, location = all_locs) %>%
             # Ensure only unique rows are maintained
-            group_by(docname, word, location) %>%
-            distinct %>%
+            group_by(docname, word, location) 
+      # A hacky solution to 'dplyr::distinct' not working for mysterious (to me) reasons
+      collocates_and_locs_no_duplicates <- unique(collocates_and_locs_no_duplicates0) %>%
             ungroup %>% 
             # Return words only
             select(word)
