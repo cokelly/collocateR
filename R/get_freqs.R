@@ -77,7 +77,13 @@ collocates <- collocates[which(boundaries == FALSE),]
 
 # Get the corresponding frequencies for the whole document
 # First cut out useless words from the docs
-docs_freqs <- x <- doc %>% as_tibble %>% unnest_tokens(., ngram, value, token = "ngrams", n = ngram) %>% filter(ngram %in% collocates$ngram) %>% group_by(ngram) %>% summarise(`Document Frequency` = n()) %>% ungroup
+docs_freqs <- x <- doc %>%
+    as_tibble %>% 
+    unnest_tokens(., ngram, value, token = "ngrams", n = ngram) %>% 
+    filter(ngram %in% collocates$ngram) %>%
+    group_by(ngram) %>% 
+    summarise(`Document Frequency` = n()) %>% 
+    ungroup
 collocates <- full_join(collocates, docs_freqs, by = "ngram")
 
 
