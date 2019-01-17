@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/cokelly/collocateR.svg?branch=master)](https://travis-ci.org/cokelly/collocateR)  [![DOI](https://zenodo.org/badge/54512562.svg)](https://zenodo.org/badge/latestdoi/54512562)
+
 # CollocateR
 
 CollocateR is a package for the statistical programming language [R](https://www.r-project.org/).
@@ -21,11 +23,11 @@ CollocateR serves a simple purpose. It processes collocates for keywords in cont
 - [x] pmi
 - [x] npmi
 - [x] z-score
-- [ ] t-score
-- [ ] MI3
-- [ ] observed_expected
-- [ ] log_log
-- [ ] log_likelihood
+- [x] MI3
+- [x] log_log
+- [x] log_likelihood
+- [ ] Import other elements
+
 
 ### Acknowledgement
 
