@@ -4,31 +4,22 @@
 #' @param keyword A key word or phrase to test
 #' @param window The number of context words to be displayed around the keyword Default 6
 #' @param ngram The size of phrases the frequencies of which we are to test (so, unigram = 1, bigram = 2, trigram = 3 etc) 
-#' @param min_count Collocates that occur fewer times than floor will be removed
-#' @param cache Getting frequencies is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Default FALSE.
-#' @include remove_duplicates.R
+#' @param remove_stopwords Remove stopwords, derived from Quanteda's list
 #' @import tibble magrittr dplyr
-#' @importFrom utils globalVariables
-#' @importFrom stringr str_split str_detect str_replace
-#' @importFrom quanteda stopwords
-#' @importFrom purrr is_character
+#' @importFrom stringi stri_replace_all_fixed
+#' @importFrom stringr str_split str_replace_all
+#' @importFrom tidytext unnest_tokens
+#' @importFrom quanteda tokens tokens_remove kwic stopwords
+#' @importFrom splitstackshape cSplit_l
+#' @importFrom purrr map map2
 #' @keywords mutual information, collocates, kwic
 #' @export
 
 
-get_freqs <- function(doc, keyword, window = 6, ngram = 1, min_count = 2, cache = FALSE){
+get_freqs <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE){
 
-      # start off by sanitising the document
-      doc <- sanitise_doc(doc)
+# Some sanity checks
       
-    # If ngrams are smaller than the keyword size, swap out the keyword for the moment.
-    if(ngram < length(unlist(str_split(keyword, " ")))){
-        managed_keyword <- internal_manage_keyword(doc, keyword)
-        doc <- managed_keyword[[1]]
-        keyword <- managed_keyword[[2]]
-        original_keyword <- managed_keyword[[3]]
-    }
-    
       # If the doc is a list, unlist it.
       # If it is not a character vector, stop.
       if(is.list(doc) == TRUE){
@@ -37,61 +28,132 @@ get_freqs <- function(doc, keyword, window = 6, ngram = 1, min_count = 2, cache 
       if(is_character(doc) != TRUE){
             stop("collocateR will only act on character vectors (for now).")
       }
-      # Sanity check that the window is a double
-window <- as.double(window)
-      # ...and that the keyword exists
-if(!exists("keyword")){stop("Please supply a keyword")}
-
-
-if(length(unlist(str_split(keyword, " "))) == 1){
-kwics<- doc %>% unlist %>%
-      quanteda::kwic(., pattern = keyword, window = window, valuetype = "fixed")
-} else {
-      kwics<- doc %>% unlist %>%
-            quanteda::kwic(., pattern = phrase(keyword), window = window, valuetype = "fixed")
-}
-kwics <- as.matrix(kwics)
-      
-      
-if(isTRUE(nrow(kwics) == 0)){stop(print(paste("No collocates for the phrase", keyword, "were found in this document.\nIf you lemmatised the document, be sure to lemmatise the keyword", sep = " ")))}
-
-kwics_processed <- kwics %>% remove_duplicates(., keyword, window)
-
-sentence_end_marker <- kwics_processed[[1]]
-kwics2 <- kwics_processed[[2]]
-
-kwics_string <- paste(kwics2$word, sep = " ", collapse = " ")
-
-if(ngram == 1){
-      collocates <- kwics_string %>% as_tibble %>% unnest_tokens(., ngram, value) %>% group_by(ngram) %>% summarise(`Collocate Frequency` = n()) %>% filter(`Collocate Frequency` >= min_count) %>% arrange(desc(`Collocate Frequency`))
-} else {
-      if(ngram > 1){
-      collocates <- kwics_string %>% quanteda::textstat_collocations(., size = ngram, min_count = min_count) %>% as_tibble %>% select(ngram = collocation, `Collocate Frequency` = count) %>% arrange(desc(`Collocate Frequency`))
-      } else {
-      stop("Ngrams must be a positive number.")
+      if(length(doc) > 1 && unique(map(doc, length)) == 1){
+            doc <- paste(doc, sep = " ", collapse = " ")
       }
+      
+      # Sanity check that the window is a double
+      window <- as.double(window)
+      # ...and that the keyword exists
+      if(!exists("keyword")){stop("Please supply a keyword")}
+      
+            
+# Remove spaces from the keyword / phrase
+      keyword_original <- keyword
+      keyword <- keyword_original %>%
+            stringi::stri_replace_all_fixed(., " ", "_")
+      doc <- gsub(keyword_original, keyword, doc)
+
+      # Remove stopwords if required
+      if(remove_stopwords == TRUE){
+            stops = quanteda::stopwords()
+            doc <- doc %>% quanteda::tokens(.) %>% # Tokenise
+                        quanteda::tokens_remove(., stops, padding = TRUE) %>%
+                        purrr::map(., function(x) paste(x, sep = " ", collapse = " ")) %>%
+                        unlist
+      } else {
+            doc <- doc
+      }
+      
+      
+      # Get kwics
+      kwic_scheme <- quanteda::kwic(doc, pattern = keyword, valuetype = "fixed", window = window)
+      if(nrow(kwic_scheme) == 0){
+            stop("No keywords were found")
+      }
+      
+      
+      split_nas_emptyvectors <- function(vector){
+            vector_split <- unlist(str_split(vector, " "))
+            
+            if(length(vector_split) < window){
+                  times_length = window-(length(vector_split))
+                  returned_vector <- c(rep(NA, times_length), vector_split)
+            } else {
+                  returned_vector <- vector_split
+            }
+            returned_vector[returned_vector == ""] <- NA # Replace empty elements with NA
+            return(returned_vector)
+      }
+      
+      # This will create a tibble of kwics
+      # The aim here is 
+      #1. to create a single column of kwic words, alongside docid and location. 
+      #2. To process for empty phrases or locations
+      #3. To remove overlaps between kwics
+      kwics_process <- function(kwic_scheme){
+            kwics_process <- kwic_scheme %>%
+            as_tibble %>% 
+            select(docname, from, pre, keyword, post) %>% # narrow down to necessary cols
+            add_column(id = rep(1:nrow(.))) %>% # Give each kwic element its own idenfier
+            splitstackshape::cSplit_l(., split.col = "pre", sep = " ") %>% # split string in pre
+            splitstackshape::cSplit_l(., split.col = "post", sep = " ") %>%
+            select(id, docname, from, pre_list, post_list) %>% # narrow down again
+            mutate(pre_list = purrr::map(pre_list, function(x) split_nas_emptyvectors(x))) %>% # run the empty and short vectors function for the left 
+            mutate(pre_list = map(pre_list, function(x) 
+                        tibble(word = x))) %>% # Turn the vectors into tibbles
+            mutate(pre_list = purrr::map2(pre_list, docname, function(x, y) x %>%
+                                                add_column(docname = rep(y, window)) %>%
+                                                add_row(word = keyword, docname = y))) %>% # Add docnames to the tibbles and the keyword plus its docname
+            mutate(pre_list = purrr::map2(pre_list, from, function(x, y) x %>%
+                                                add_column(keyword_loc = seq((y-(nrow(x)-1)), y)))) %>% # Add locations to the left tibbles
+            mutate(post_list = purrr::map(post_list, function(x) split_nas_emptyvectors(x))) %>% # run the empty and short vectors function for the right 
+            mutate(post_list = purrr::map(post_list, function(x) 
+                        tibble(word = x))) %>% # Turn the vectors into tibbles
+            mutate(post_list = purrr::map2(post_list, docname, function(x, y) x %>%
+                                                 add_column(docname = rep(y, window)))) %>%  # Add docnames to the tibbles
+            mutate(post_list = purrr::map2(post_list, from, function(x, y) x %>% 
+                                                 add_column(keyword_loc = seq((y+1), (y+nrow(x)))))) %>% # Add locations to the right tibbles
+            mutate(pre_list = purrr::map2(pre_list, id, function(x, y) x %>%
+                                                add_column(id = rep(y, nrow(x))))) %>% # add id
+            mutate(post_list = purrr::map2(post_list, id, function(x, y) x %>%
+                                                 add_column(id = rep(y, nrow(x))))) # add id
+            return(kwics_process)
 }
-# Remove rows containing sentence end or beginning boundaries. 
-boundaries <- str_detect(collocates$ngram, sentence_end_marker)
-collocates <- collocates[which(boundaries == FALSE),]
+            kwics_processed <- kwics_process(kwic_scheme)
 
-# Get the corresponding frequencies for the whole document
-# First cut out useless words from the docs
-docs_freqs <- x <- doc %>%
-    as_tibble %>% 
-    unnest_tokens(., ngram, value, token = "ngrams", n = ngram) %>% 
-    filter(ngram %in% collocates$ngram) %>%
-    group_by(ngram) %>% 
-    summarise(`Document Frequency` = n()) %>% 
-    ungroup
-collocates <- full_join(collocates, docs_freqs, by = "ngram")
+      # Next step: 
+      #1. process overlaps away
+      #2. extract the full sentences
+      #3. Break into ngrams
+      
+      get_ngrams <- function(kwics_processed){
+            ngrams<- bind_rows(kwics_processed$pre_list, kwics_processed$post_list) %>%
+            group_by(docname) %>% # Group by docname on the off-chance that two docs have the same loc
+            distinct(keyword_loc, .keep_all = TRUE) %>%
+            ungroup %>%
+            group_by(id) %>% # group by id to retrieve full sentences
+            mutate(full_sentence = paste(word, sep = " ", collapse = " ")) %>% 
+            select(docname, id, full_sentence) %>%
+            mutate(full_sentence = str_replace_all(full_sentence, "_", " ")) %>% # Remove underlines remaining in keywords
+            distinct(id, .keep_all = TRUE) %>% # Just keep one sentence per id
+            tidytext::unnest_tokens(., ngram, full_sentence, token = "ngrams", n = ngram) %>% # Get ngrams and count
+            ungroup %>%
+            group_by(ngram) %>%
+            summarise(kwic_count = n())
+            
+            return(ngrams)
+      }
+      ngrams <- get_ngrams(kwics_processed)
 
+      doc <- str_replace_all(doc, "_", " ") # remove underlines from doc: no longer needed
+      
+      process_all_words <- function(doc){
+      all_words <- doc %>% tibble %>% 
+            tidytext::unnest_tokens(., ngram, ., token = "ngrams", n = ngram) %>% # Get ngrams
+            group_by(ngram) %>%
+            summarise(doc_count = n())
+      
+      return(all_words)
+      }
+      
+      all_words <- process_all_words(doc)
 
-# If ngrams are smaller than the keyword size, return the keyword to the original.
-if(exists("original_keyword")){
-    collocates <- collocates %>%
-        mutate(ngram = case_when(ngram == keyword ~ str_replace(ngram, keyword, original_keyword), ngram != keyword ~ ngram))
-}
+      collocates <- ngrams %>% # Assemble final table
+            left_join(., all_words, by = "ngram") %>%
+            filter(!(is.na(doc_count))) %>%
+            arrange(desc(kwic_count))
 
-return(collocates)
+      return(collocates)
+      
 }

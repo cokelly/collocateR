@@ -4,11 +4,10 @@
 \alias{internal_get_pmi}
 \title{pointwise mutual information: internal function (for use in pmi and npmi functions)}
 \usage{
-internal_get_pmi(doc, keyword, window = window, ngram = ngram,
-  min_count = min_count, cache = FALSE)
+internal_get_pmi(doc, keyword, window, ngram, remove_stopwords, min_count)
 }
 \arguments{
-\item{doc}{Acharacter vector or list of character vectors}
+\item{doc}{A character vector or list of character vectors}
 
 \item{keyword}{A key word or phrase to test}
 
@@ -16,9 +15,9 @@ internal_get_pmi(doc, keyword, window = window, ngram = ngram,
 
 \item{ngram}{The size of phrases the frequencies of which we are to test (so, unigram = 1, bigram = 2, trigram = 3 etc)}
 
-\item{min_count}{Collocates that occur fewer times than floor will be removed}
+\item{remove_stopwords}{Remove stopwords, derived from Quanteda's list}
 
-\item{cache}{Organising collocates is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Default FALSE.}
+\item{min_count}{Collocates that occur fewer times than floor will be removed}
 }
 \description{
 pointwise mutual information: internal function (for use in pmi and npmi functions)

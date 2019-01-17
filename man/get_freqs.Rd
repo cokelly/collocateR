@@ -4,8 +4,8 @@
 \alias{get_freqs}
 \title{Extract frequencies for the keywords in context and the full document}
 \usage{
-get_freqs(doc, keyword, window = 6, ngram = 1, min_count = 2,
-  cache = FALSE)
+get_freqs(doc, keyword, window = 6, ngram = 1,
+  remove_stopwords = TRUE)
 }
 \arguments{
 \item{doc}{A character vector or list of character vectors}
@@ -16,9 +16,7 @@ get_freqs(doc, keyword, window = 6, ngram = 1, min_count = 2,
 
 \item{ngram}{The size of phrases the frequencies of which we are to test (so, unigram = 1, bigram = 2, trigram = 3 etc)}
 
-\item{min_count}{Collocates that occur fewer times than floor will be removed}
-
-\item{cache}{Getting frequencies is the most time-consuming step in calculating frequencies and other collocation algorithms. The memoise package is used to cache specific iterations of this process. Default FALSE.}
+\item{remove_stopwords}{Remove stopwords, derived from Quanteda's list}
 }
 \description{
 Extract frequencies for the keywords in context and the full document
