@@ -14,7 +14,7 @@
 #' @keywords mutual information, collocates, kwic
 #' @export
 
-get_loglog <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE, min_count = 2, SPAN = "both"){
+get_loglog <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE, min_count = 2, span = "both"){
       
       # Using the forumula here: http://www.aclweb.org/anthology/J90-1003
       

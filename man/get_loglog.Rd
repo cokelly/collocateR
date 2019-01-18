@@ -5,7 +5,7 @@
 \title{log-log calculation}
 \usage{
 get_loglog(doc, keyword, window = 6, ngram = 1,
-  remove_stopwords = TRUE, min_count = 2, SPAN = "both")
+  remove_stopwords = TRUE, min_count = 2, span = "both")
 }
 \arguments{
 \item{doc}{Acharacter vector or list of character vectors}
