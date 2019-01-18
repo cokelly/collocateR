@@ -35,5 +35,6 @@ Imports:
     utils
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    janeaustinr
 VignetteBuilder: knitr
