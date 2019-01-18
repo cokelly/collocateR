@@ -5,7 +5,7 @@
 \title{mutual information cubed drawing on information in Church and Hanks 1989 http://www.aclweb.org/anthology/J90-1003}
 \usage{
 get_mi3(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE,
-  min_count = 2)
+  min_count = 2, span = "both")
 }
 \arguments{
 \item{doc}{Acharacter vector or list of character vectors}
@@ -19,6 +19,8 @@ get_mi3(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE,
 \item{remove_stopwords}{Remove stopwords, derived from Quanteda's list}
 
 \item{min_count}{Collocates that occur fewer times than floor will be removed}
+
+\item{span}{Whether to include a window's width of words to the left of the keyword, to the right or on both sides}
 }
 \description{
 mutual information cubed drawing on information in Church and Hanks 1989 http://www.aclweb.org/anthology/J90-1003

@@ -5,7 +5,7 @@
 \title{A z-score calculates a probability score that compares the observed collocate frequency to its expected value}
 \usage{
 get_zscore(doc, keyword, window = 6, ngram = 1,
-  remove_stopwords = TRUE, min_count = 2)
+  remove_stopwords = TRUE, min_count = 2, span = "both")
 }
 \arguments{
 \item{doc}{A character vector or list of character vectors}
@@ -19,6 +19,8 @@ get_zscore(doc, keyword, window = 6, ngram = 1,
 \item{remove_stopwords}{Remove stopwords, derived from Quanteda's list}
 
 \item{min_count}{The minimum frequency to include in the score}
+
+\item{span}{Whether to include a window's width of words to the left of the keyword, to the right or on both sides}
 }
 \description{
 A z-score calculates a probability score that compares the observed collocate frequency to its expected value

@@ -5,6 +5,7 @@
 #' @param window The number of context words to be displayed around the keyword Default 6
 #' @param ngram The size of phrases the frequencies of which we are to test (so, unigram = 1, bigram = 2, trigram = 3 etc) 
 #' @param remove_stopwords Remove stopwords, derived from Quanteda's list
+#' @param span Whether to include a window's width of words to the left of the keyword, to the right or on both sides
 #' @import tibble magrittr dplyr
 #' @importFrom stringi stri_replace_all_fixed
 #' @importFrom stringr str_split str_replace_all
@@ -16,8 +17,9 @@
 #' @export
 
 
-get_freqs <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE){
+get_freqs <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE, span = "both"){
 
+      
 # Some sanity checks
       
       # If the doc is a list, unlist it.
@@ -37,6 +39,11 @@ get_freqs <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TR
       # ...and that the keyword exists
       if(!exists("keyword")){stop("Please supply a keyword")}
       
+      # Check that span is correct
+      span <- tolower(span)
+      if(span !="both" & span != "b" & span !="left" & span != "l" & span != "right" & span != "r"){
+            stop("span must equal both or left or right")
+      }
             
 # Remove spaces from the keyword / phrase
       keyword_original <- keyword
@@ -76,49 +83,81 @@ get_freqs <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TR
             return(returned_vector)
       }
       
-      # This will create a tibble of kwics
+      # This will create two tibbles of kwics if span = "both" or one if span = "left" or "right"
       # The aim here is 
       #1. to create a single column of kwic words, alongside docid and location. 
       #2. To process for empty phrases or locations
-      #3. To remove overlaps between kwics
-      kwics_process <- function(kwic_scheme){
-            kwics_process <- kwic_scheme %>%
+      #3. To designate locations based on pre or post
+      
+      kwics_process <- function(kwic_scheme, designated_span){
+            
+            kwics_process0 <- kwic_scheme %>%
             as_tibble %>% 
-            select(docname, from, pre, keyword, post) %>% # narrow down to necessary cols
+            select(docname, from, keyword, designated_span) %>% # narrow down to necessary cols
             add_column(id = rep(1:nrow(.))) %>% # Give each kwic element its own idenfier
-            splitstackshape::cSplit_l(., split.col = "pre", sep = " ") %>% # split string in pre
-            splitstackshape::cSplit_l(., split.col = "post", sep = " ") %>%
-            select(id, docname, from, pre_list, post_list) %>% # narrow down again
-            mutate(pre_list = purrr::map(pre_list, function(x) split_nas_emptyvectors(x))) %>% # run the empty and short vectors function for the left 
-            mutate(pre_list = map(pre_list, function(x) 
+            splitstackshape::cSplit_l(., split.col = designated_span, sep = " ") %>% # split string in the desired span
+            select(id, docname, from, working_list = paste(designated_span, "list", sep = "_")) %>% # narrow down again
+            mutate(working_list = purrr::map(working_list, function(x) split_nas_emptyvectors(x))) %>% # run the empty and short vectors function for the left 
+            mutate(working_list = map(working_list, function(x) 
                         tibble(word = x))) %>% # Turn the vectors into tibbles
-            mutate(pre_list = purrr::map2(pre_list, docname, function(x, y) x %>%
-                                                add_column(docname = rep(y, window)) %>%
-                                                add_row(word = keyword, docname = y))) %>% # Add docnames to the tibbles and the keyword plus its docname
-            mutate(pre_list = purrr::map2(pre_list, from, function(x, y) x %>%
-                                                add_column(keyword_loc = seq((y-(nrow(x)-1)), y)))) %>% # Add locations to the left tibbles
-            mutate(post_list = purrr::map(post_list, function(x) split_nas_emptyvectors(x))) %>% # run the empty and short vectors function for the right 
-            mutate(post_list = purrr::map(post_list, function(x) 
-                        tibble(word = x))) %>% # Turn the vectors into tibbles
-            mutate(post_list = purrr::map2(post_list, docname, function(x, y) x %>%
-                                                 add_column(docname = rep(y, window)))) %>%  # Add docnames to the tibbles
-            mutate(post_list = purrr::map2(post_list, from, function(x, y) x %>% 
-                                                 add_column(keyword_loc = seq((y+1), (y+nrow(x)))))) %>% # Add locations to the right tibbles
-            mutate(pre_list = purrr::map2(pre_list, id, function(x, y) x %>%
-                                                add_column(id = rep(y, nrow(x))))) %>% # add id
-            mutate(post_list = purrr::map2(post_list, id, function(x, y) x %>%
-                                                 add_column(id = rep(y, nrow(x))))) # add id
+            mutate(working_list = purrr::map2(working_list, docname, function(x, y) x %>%
+                                                add_column(docname = rep(y, window))))  # Add docnames to the tibbles
+                                                
+            
+            if(designated_span == "pre"){
+                  kwics_process <- kwics_process0 %>%
+                        mutate(working_list = purrr::map2(working_list, docname, function(x, y) x %>%
+                                                                add_row(word = keyword, docname = y))) %>% # the keyword plus its docname))
+                        mutate(working_list = purrr::map2(working_list, from, function(x, y) x %>%
+                                                                add_column(keyword_loc = seq((y-(nrow(x)-1)), y)))) %>% # Add locations to the left tibbles
+                        mutate(working_list = purrr::map2(working_list, id, function(x, y) x %>%
+                                                                add_column(id = rep(y, nrow(x))))) # add id
+            }
+            if(designated_span == "post"){
+                  kwics_process <- kwics_process0 %>%
+                        mutate(working_list = purrr::map2(working_list, from, function(x, y) x %>%
+                                                                add_column(keyword_loc = seq((y+1), (y+(nrow(x))))))) %>% # Add locations to the right tibbles
+                        mutate(working_list = purrr::map2(working_list, id, function(x, y) x %>%
+                                                                add_column(id = rep(y, nrow(x))))) # add id
+            }
+            
             return(kwics_process)
 }
-            kwics_processed <- kwics_process(kwic_scheme)
-
+            
+      # Develop a processed list by span
+      if(span == "both" | span == "b"){
+            left_kwics <- kwics_process(kwic_scheme, designated_span = "pre") %>%
+                  rename(pre_list = working_list)
+            right_kwics <- kwics_process(kwic_scheme, designated_span = "post") %>%
+                  rename(post_list = working_list)
+      }
+      if(span == "left" | span == "l"){
+            left_kwics <- kwics_process(kwic_scheme, designated_span = "pre") %>%
+                  rename(pre_list = working_list)
+      }
+      if(span == "right" | span == "r"){
+            right_kwics <- kwics_process(kwic_scheme, designated_span = "post") %>%
+                  rename(post_list = working_list)
+      }
+      
       # Next step: 
-      #1. process overlaps away
-      #2. extract the full sentences
-      #3. Break into ngrams
+      #1. Combine rows depending on span
+      #2. process overlaps away
+      #3. extract the full sentences
+      #4. Break into ngrams
       
       get_ngrams <- function(kwics_processed){
-            ngrams<- bind_rows(kwics_processed$pre_list, kwics_processed$post_list) %>%
+            if(span == "both" | span == "b"){
+                  ngrams0<- bind_rows(left_kwics$pre_list, right_kwics$post_list) 
+            }
+            if(span == "left" | span == "l"){
+                  ngrams0 <- bind_rows(left_kwics$pre_list)
+            }
+            if(span == "right" | span == "r"){
+                  ngrams0 <- bind_rows(right_kwics$post_list)
+            }
+                  
+      ngrams <- ngrams0 %>%
             group_by(docname) %>% # Group by docname on the off-chance that two docs have the same loc
             distinct(keyword_loc, .keep_all = TRUE) %>%
             ungroup %>%

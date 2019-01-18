@@ -5,7 +5,7 @@
 \title{Extract frequencies for the keywords in context and the full document}
 \usage{
 get_freqs(doc, keyword, window = 6, ngram = 1,
-  remove_stopwords = TRUE)
+  remove_stopwords = TRUE, span = "both")
 }
 \arguments{
 \item{doc}{A character vector or list of character vectors}
@@ -17,6 +17,8 @@ get_freqs(doc, keyword, window = 6, ngram = 1,
 \item{ngram}{The size of phrases the frequencies of which we are to test (so, unigram = 1, bigram = 2, trigram = 3 etc)}
 
 \item{remove_stopwords}{Remove stopwords, derived from Quanteda's list}
+
+\item{span}{Whether to include a window's width of words to the left of the keyword, to the right or on both sides}
 }
 \description{
 Extract frequencies for the keywords in context and the full document

@@ -6,6 +6,7 @@
 #' @param ngram The size of phrases the frequencies of which we are to test (so, unigram = 1, bigram = 2, trigram = 3 etc) 
 #' @param remove_stopwords Remove stopwords, derived from Quanteda's list
 #' @param min_count The minimum frequency to include in the score
+#' @param span Whether to include a window's width of words to the left of the keyword, to the right or on both sides
 #' @import tibble dplyr
 #' @importFrom utils globalVariables
 #' @include get_freqs.R
@@ -14,10 +15,10 @@
 
 
 
-get_zscore <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE, min_count = 2){
+get_zscore <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE, min_count = 2, span = "both"){
   
   # Get frequencies
-      freqs <- get_freqs(doc = doc, keyword = keyword, window = window, ngram = ngram, remove_stopwords = remove_stopwords) %>%
+      freqs <- get_freqs(doc = doc, keyword = keyword, window = window, ngram = ngram, remove_stopwords = remove_stopwords, span = span) %>%
             filter(kwic_count >= min_count) 
       
       

@@ -6,6 +6,7 @@
 #' @param ngram The size of phrases the frequencies of which we are to test (so, unigram = 1, bigram = 2, trigram = 3 etc) 
 #' @param remove_stopwords Remove stopwords, derived from Quanteda's list
 #' @param min_count Collocates that occur fewer times than floor will be removed
+#' @param span Whether to include a window's width of words to the left of the keyword, to the right or on both sides
 #' @include get_freqs.R
 #' @import tibble dplyr
 #' @importFrom utils globalVariables
@@ -13,11 +14,11 @@
 #' @keywords mutual information, collocates, kwic
 #' @export
 
-get_mi <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE, min_count = 2){
+get_mi <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE, min_count = 2, span = "both"){
 
       # Using the forumula here: http://www.aclweb.org/anthology/J90-1003
       
-      freqs <- get_freqs(doc, keyword, window, ngram, remove_stopwords) %>%
+      freqs <- get_freqs(doc, keyword, window, ngram, remove_stopwords, span = span) %>%
             filter(kwic_count >= as.numeric(min_count))
       
 # Calculate the mi score

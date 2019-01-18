@@ -4,7 +4,8 @@
 \alias{internal_get_pmi}
 \title{pointwise mutual information: internal function (for use in pmi and npmi functions)}
 \usage{
-internal_get_pmi(doc, keyword, window, ngram, remove_stopwords, min_count)
+internal_get_pmi(doc, keyword, window, ngram, remove_stopwords, min_count,
+  span)
 }
 \arguments{
 \item{doc}{A character vector or list of character vectors}
@@ -18,6 +19,8 @@ internal_get_pmi(doc, keyword, window, ngram, remove_stopwords, min_count)
 \item{remove_stopwords}{Remove stopwords, derived from Quanteda's list}
 
 \item{min_count}{Collocates that occur fewer times than floor will be removed}
+
+\item{span}{Whether to include a window's width of words to the left of the keyword, to the right or on both sides}
 }
 \description{
 pointwise mutual information: internal function (for use in pmi and npmi functions)
