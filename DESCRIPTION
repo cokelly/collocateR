@@ -33,3 +33,7 @@ Imports:
     tibble,
     tidytext,
     utils
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
