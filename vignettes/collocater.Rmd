@@ -1,0 +1,67 @@
+---
+title: "CollocateR: significance testing for keywords in context"
+author: "Ciarán O'Kelly"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{CollocateR: significance testing for keywords in context}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+CollocateR is an R package that provides significance testing for words or phrases that are _collocated_ with a keyword or phrase. Employing the 'Keywords in Context' (`kwic`) and tokenising functions from the [Quanteda](https://quanteda.io/) package[^fn1] and the tidy workflows (especially the `unnest_tokens` function) of the [Tidytext](https://www.tidytextmining.com/) package,[^fn2]
+
+The package was built originally to support research towards O'Kelly's 'Human Rights and the Grammar of Social Responsibility',  Social & Legal Studies_ in 2019 ([early online here](https://journals.sagepub.com/doi/full/10.1177/0964663918819400)) but has been expanded to cover a broader range of corpus linguistics tests for collocates.
+
+# What is collocation?
+
+Keywords in context are a sequence of words that sit in the 'neighbourhood' of a keyword or node. That is, the word or phrase sits within a window of x words of the keyword. Analysing these words and phrases -- how words and phrases 'attract and repel' each other (Barnbrook et al., 2013: 164ff)[^fn3] -- can help us understand the keywords more significantly. 'You shall', in other words, 'know a word by the company it keeps' (Firth, 1957: 11).[^fn4]
+
+Collocation testing in essence involves the construction of two corpora: a corpus constructed of keywords in context (kwics) and the docment or corpus beyond those words. The question to answer is: is a word's presence in the corpus of kwics significant in the context of its frequency elsewhere in the corpus? This question can only be answered by employing significance measures to exclude words that recur in context because they recur _everywhere_.
+
+# The tests
+
+The collocateR package will test significance in the following ways:
+
+Where $x$ is the keyword's frequency, $a$ is the word's frequency in the kwic corpus, $b$ is its frequency in wider corpus, $c$ is the size of the kwic corpus and $d$ is the size of the wider corpus:
+
+- **Log-Likelihood**:[^fn5] tests for the significance of differences in frequency between two corpora. Log-likelhood is calculated as 
+
+\begin{equation}
+  Log-Likelihood = 2\left(a\left log(a)\right +(b(log(b)))+(c(log(c)))+(d(log(d)))-
+\end{equation}  
+\begin{equation}  
+  ((a+b)*log(a+b)) - ((a+c)*log(a+c))-
+\end{equation}    
+\begin{equation}  
+  ((b+d)*log(b+d)) + ((a+b+c+d)*log(a+b+c+d)))
+\end{equation}  
+
+
+- **log-log**:
+
+\begin{equation}
+log(prob(ab)/(prob(a)*proby*span))*log(probxy)
+\end{equation}
+
+
+[^fn1]: Benoit K, Watanabe K, Wang H, Nulty P, Obeng A, Müller S, Matsuo A (2018). "quanteda: An R package for the quantitative analysis of textual data." _Journal of Open Source Software_, *3*(30), 774. doi: 10.21105/joss.00774 (URL: http://doi.org/10.21105/joss.00774), <URL:https://quanteda.io>.
+
+[^fn2]: Silge J, Robinson D (2016). "tidytext: Text Mining and Analysis Using
+Tidy Data Principles in R." _JOSS_, *1*(3). doi: 10.21105/joss.00037 (URL: http://doi.org/10.21105/joss.00037), <URL:
+http://dx.doi.org/10.21105/joss.00037>.
+
+[^fn3]: Barnbrook G, Mason O and Krishnamurth R (2013). _Collocation: Applications and Implications_. London: Palgrave Macmillan.
+
+[^fn4]: Firth JR (1957). "A synopsis of linguistic theory 1930-1955." _Studies in linguistic analysis_. Oxford: Blackwell.
+
+[^fn5]: See Church KW and Hanks P (1989). "Word association norms, mutual information, and lexicography." _Association for Computational Linguistics_, pp. 76-83. DOI: 10.3115/981623.981633. <URL: http://www.aclweb.org/anthology/J90-1003>
