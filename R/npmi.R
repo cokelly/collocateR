@@ -7,7 +7,7 @@
 #' @param remove_stopwords Remove stopwords, derived from Quanteda's list
 #' @param min_count Collocates that occur fewer times than floor will be removed
 #' @param span Whether to include a window's width of words to the left of the keyword, to the right or on both sides
-#' @include internal_get_pmi.R
+#' @include internal_pmi.R
 #' @import tibble dplyr
 #' @importFrom utils globalVariables
 #' @keywords mutual information, collocates, kwic

@@ -7,7 +7,7 @@
 #' @param remove_stopwords Remove stopwords, derived from Quanteda's list
 #' @param min_count Collocates that occur fewer times than floor will be removed
 #' @param span Whether to include a window's width of words to the left of the keyword, to the right or on both sides
-#' @include internal_get_pmi.R
+#' @include internal_pmi.R
 #' @import tibble dplyr
 #' @importFrom utils globalVariables
 #' @keywords mutual information, collocates, kwic
@@ -15,7 +15,7 @@
 
 pmi <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE, min_count = 2, span = "both"){
 
-      internal_pmi <- internal_get_pmi(doc, keyword, window, ngram, remove_stopwords, min_count, span = span)
+      internal_pmi <- internal_pmi(doc, keyword, window, ngram, remove_stopwords, min_count, span = span)
       
 # Calculate the pmi
 pmi <- internal_pmi %>%
