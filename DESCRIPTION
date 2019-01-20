@@ -12,14 +12,14 @@ Encoding: UTF-8
 Collate: 
     'collocateR.R'
     'get_freqs.R'
-    'get_loglikelihood.R'
-    'get_loglog.R'
-    'get_mi.R'
-    'get_mi3.R'
-    'internal_get_pmi.R'
-    'get_npmi.R'
-    'get_pmi.R'
-    'get_zscore.R'
+    'internal_pmi.R'
+    'loglikelihood.R'
+    'loglog.R'
+    'mi.R'
+    'mi3.R'
+    'npmi.R'
+    'pmi.R'
+    'zscore.R'
 Depends:
     R (>= 3.4)
 Imports:
