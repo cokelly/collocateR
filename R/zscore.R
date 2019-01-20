@@ -15,7 +15,7 @@
 
 
 
-get_zscore <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE, min_count = 2, span = "both"){
+zscore <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE, min_count = 2, span = "both"){
   
   # Get frequencies
       freqs <- get_freqs(doc = doc, keyword = keyword, window = window, ngram = ngram, remove_stopwords = remove_stopwords, span = span) %>%

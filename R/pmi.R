@@ -13,7 +13,7 @@
 #' @keywords mutual information, collocates, kwic
 #' @export
 
-get_pmi <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE, min_count = 2, span = "both"){
+pmi <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE, min_count = 2, span = "both"){
 
       internal_pmi <- internal_get_pmi(doc, keyword, window, ngram, remove_stopwords, min_count, span = span)
       

@@ -13,11 +13,10 @@
 #' @keywords mutual information, collocates, kwic
 #' @export
 
-
-get_npmi <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE, min_count = 2, span = "both"){
+npmi <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE, min_count = 2, span = "both"){
       
       ## get pmi using get_pmi_internal
-      pmi <- internal_get_pmi(doc = doc, keyword = keyword, window = window, ngram = ngram, remove_stopwords = remove_stopwords, min_count = min_count, span = span)
+      pmi <- internal_pmi(doc = doc, keyword = keyword, window = window, ngram = ngram, remove_stopwords = remove_stopwords, min_count = min_count, span = span)
       
       npmi <- pmi %>%
             mutate(npmi = pmi/(-log(probxy))) %>%

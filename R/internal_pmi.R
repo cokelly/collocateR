@@ -11,7 +11,7 @@
 #' @import tibble dplyr
 #' @keywords mutual information, collocates, kwic
 
-internal_get_pmi <- function(doc, keyword, window, ngram, remove_stopwords, min_count, span){
+internal_pmi <- function(doc, keyword, window, ngram, remove_stopwords, min_count, span){
       
       freqs <- get_freqs(doc, keyword, window, ngram, remove_stopwords, span) %>%
             filter(kwic_count >= as.numeric(min_count))
