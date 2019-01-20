@@ -36,5 +36,5 @@ Imports:
 Suggests: 
     knitr,
     rmarkdown,
-    janeaustinr
+    janeaustenr
 VignetteBuilder: knitr
