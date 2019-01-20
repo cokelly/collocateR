@@ -33,9 +33,9 @@ zscore <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE,
         # prob * freq of node * window * span
         mutate(expected = as.numeric((prob*keyword_count*((window*2)+(unlist(length(str_split(keyword, " ")))))))) %>%
         # (Fn,c-E/sqrt(E(1-p)))
-        mutate(`z score` = as.numeric((kwic_count - expected)/(sqrt(expected*(1-prob))))) %>%
-        select(ngram, `z score`) %>%
-        arrange(desc(`z score`))
+        mutate(zscore = as.numeric((kwic_count - expected)/(sqrt(expected*(1-prob))))) %>%
+        select(ngram, zscore) %>%
+        arrange(desc(zscore))
   
 return(z_score)
 }

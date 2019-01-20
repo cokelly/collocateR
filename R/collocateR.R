@@ -43,4 +43,4 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".",
 	"wordcount",
 	"working_list",
 	"z_score",
-	"z score"))
+	"zscore"))
