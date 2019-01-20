@@ -14,7 +14,7 @@
 #' @keywords mutual information, collocates, kwic
 #' @export
 
-oglikelihood <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE, min_count = 2, span = "both"){
+loglikelihood <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE, min_count = 2, span = "both"){
       
       # Using the forumula here: http://www.aclweb.org/anthology/J90-1003
       
