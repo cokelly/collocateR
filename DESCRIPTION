@@ -15,9 +15,9 @@ Collate:
     'internal_pmi.R'
     'loglikelihood.R'
     'loglog.R'
-    'mi3.R'
     'npmi.R'
     'pmi.R'
+    'pmicubed.R'
     'zscore.R'
 Depends:
     R (>= 3.4)
