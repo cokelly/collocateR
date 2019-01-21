@@ -2,7 +2,7 @@
 % Please edit documentation in R/loglog.R
 \name{loglog}
 \alias{loglog}
-\title{log-log calculation}
+\title{log-log calculation: multiplying the mutual information value by log base 2 of the keyword-collocate frequency}
 \usage{
 loglog(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE,
   min_count = 2, span = "both")
@@ -23,7 +23,7 @@ loglog(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE,
 \item{span}{Whether to include a window's width of words to the left of the keyword, to the right or on both sides}
 }
 \description{
-log-log calculation
+log-log calculation: multiplying the mutual information value by log base 2 of the keyword-collocate frequency
 }
 \keyword{collocates,}
 \keyword{information,}

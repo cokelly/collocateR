@@ -1,4 +1,4 @@
-#' log-log calculation
+#' log-log calculation: multiplying the mutual information value by log base 2 of the keyword-collocate frequency
 #' 
 #' @param doc Acharacter vector or list of character vectors
 #' @param keyword A key word or phrase to test
@@ -16,7 +16,7 @@
 
 loglog <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE, min_count = 2, span = "both"){
       
-      # Using the forumula here: http://www.aclweb.org/anthology/J90-1003
+      # Using the forumula here: http://rdues.bcu.ac.uk/bncweb/manual/bncwebman-collocation.htm#formulae
       
       freqs <- get_freqs(doc, keyword, window, ngram, remove_stopwords, span = span) %>%
             filter(kwic_count >= as.numeric(min_count))
