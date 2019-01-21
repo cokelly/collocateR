@@ -15,7 +15,6 @@ Collate:
     'internal_pmi.R'
     'loglikelihood.R'
     'loglog.R'
-    'mi.R'
     'mi3.R'
     'npmi.R'
     'pmi.R'
