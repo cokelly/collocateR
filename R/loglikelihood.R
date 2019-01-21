@@ -24,10 +24,6 @@ loglikelihood <- function(doc = doc, keyword = keyword, window = 6, ngram = 1, r
       freqs <- freqs0 %>%
             filter(kwic_count >= as.numeric(min_count))
       
-      calc_ll <- function(a, b, c, d){ # log likelhood function from http://rdues.bcu.ac.uk/bncweb/manual/bncwebman-collocation.htm
-            loglikelihood <- 2*((a*log(a))+(b*log(b))+(c*log(c))+(d*log(d)) - ((a+b)*log(a+b)) - ((a+c)*log(a+c)) - ((b+d)*log(b+d)) + ((a+b+c+d)*log(a+b+c+d)))
-                return(loglikelihood)
-      }
       
       # Calculate the log likelihood score
       loglikelihood <- freqs %>%
@@ -36,7 +32,7 @@ loglikelihood <- function(doc = doc, keyword = keyword, window = 6, ngram = 1, r
             mutate(d = as.numeric(wordcount - doc_count)) %>%
             mutate(E1 = as.numeric((c*(kwic_count+doc_count)/(c+d)))) %>%
             mutate(E2 = as.numeric((d*(kwic_count+doc_count)/(c+d)))) %>%
-            mutate(loglikelihood = as.numeric(2*((kwic_count*(log(kwic_count/E1)))+(doc_count*log(doc_count/E2))))) %>%
+            mutate(loglikelihood = as.numeric((kwic_count*(log(kwic_count/E1)))+(doc_count*log(doc_count/E2)))) %>%
             select(ngram, loglikelihood) %>%
             arrange(desc(loglikelihood)) %>%
             mutate(`p <` = case_when(loglikelihood >= 15.13 ~ "0.0001",
