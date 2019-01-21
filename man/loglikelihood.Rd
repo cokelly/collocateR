@@ -4,7 +4,7 @@
 \alias{loglikelihood}
 \title{log-likelihood calculation derived from http://ucrel.lancs.ac.uk/llwizard.html}
 \usage{
-loglikelihood(doc, keyword, window = 6, ngram = 1,
+loglikelihood(doc = doc, keyword = keyword, window = 6, ngram = 1,
   remove_stopwords = TRUE, min_count = 2, span = "both")
 }
 \arguments{

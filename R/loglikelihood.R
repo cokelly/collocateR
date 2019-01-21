@@ -14,11 +14,11 @@
 #' @keywords mutual information, collocates, kwic
 #' @export
 
-loglikelihood <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE, min_count = 2, span = "both"){
+loglikelihood <- function(doc = doc, keyword = keyword, window = 6, ngram = 1, remove_stopwords = TRUE, min_count = 2, span = "both"){
       
       # Using the forumula here: http://www.aclweb.org/anthology/J90-1003
       
-      freqs0 <- get_freqs(doc, keyword, window, ngram, remove_stopwords, span = span) 
+      freqs0 <- get_freqs(doc = doc, keyword = keyword, window = window, ngram = ngram, remove_stopwords = remove_stopwords, span = span) 
       # Extract the total number of words in the kwic 'corpus
       kwic_total_words <- sum(freqs0$kwic_count)
       freqs <- freqs0 %>%
