@@ -17,7 +17,7 @@
 #' @export
 
 
-get_freqs <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE, span = "both"){
+get_freqs <- function(doc = doc, keyword = keyword, window = 6, ngram = 1, remove_stopwords = TRUE, span = "both"){
 
       
 # Some sanity checks
@@ -47,9 +47,11 @@ get_freqs <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TR
             
 # Remove spaces from the keyword / phrase
       keyword_original <- keyword
+      if(length(unlist(str_split(keyword, " ")) > 1)){
       keyword <- keyword_original %>%
             stringi::stri_replace_all_fixed(., " ", "_")
       doc <- gsub(keyword_original, keyword, doc)
+      }
 
       # Remove stopwords if required
       if(remove_stopwords == TRUE){
@@ -64,7 +66,7 @@ get_freqs <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TR
       
       
       # Get kwics
-      kwic_scheme <- quanteda::kwic(doc, pattern = keyword, valuetype = "fixed", window = window)
+      kwic_scheme <- quanteda::kwic(x = doc, pattern = keyword, valuetype = "fixed", window = window)
       if(nrow(kwic_scheme) == 0){
             stop("No keywords were found")
       }

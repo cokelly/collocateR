@@ -4,7 +4,7 @@
 \alias{get_freqs}
 \title{Extract frequencies for the keywords in context and the full document}
 \usage{
-get_freqs(doc, keyword, window = 6, ngram = 1,
+get_freqs(doc = doc, keyword = keyword, window = 6, ngram = 1,
   remove_stopwords = TRUE, span = "both")
 }
 \arguments{
