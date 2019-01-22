@@ -15,7 +15,7 @@ internal_pmi <- function(doc, keyword, window, ngram, remove_stopwords, min_coun
       
       freqs <- get_freqs(doc, keyword, window, ngram, remove_stopwords, span) %>%
             dplyr::filter(kwic_count >= as.numeric(min_count))
-      
+      # Return the keyword count from the get_freqs table
       keyword_count <- freqs %>% filter(ngram == keyword) %>% .$kwic_count
       # Calculate the pmi
   pmi <- freqs %>%
