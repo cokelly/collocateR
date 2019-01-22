@@ -10,7 +10,7 @@
 #' @include get_freqs.R
 #' @import tibble dplyr
 #' @importFrom utils globalVariables
-#' @importFrom stringr str_split
+#' @importFrom stringr str_split str_count
 #' @keywords mutual information, collocates, kwic
 #' @export
 
