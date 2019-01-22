@@ -69,8 +69,9 @@ get_freqs <- function(doc = doc, keyword = keyword, window = 6, ngram = 1, remov
       # Get kwics
       kwic_scheme <- quanteda::kwic(x = doc, pattern = keyword, valuetype = "fixed", window = window)
       if(nrow(kwic_scheme) == 0){
-            stop("No keywords were found")
-      }
+            warning("No keywords were found")
+            collocates <- tibble(ngram = NA, kwic_count = NA, doc_count = NA)
+      } else { # keep going
       
       
       split_nas_emptyvectors <- function(vector){
@@ -195,7 +196,7 @@ get_freqs <- function(doc = doc, keyword = keyword, window = 6, ngram = 1, remov
             dplyr::left_join(., all_words, by = "ngram") %>%
             dplyr::filter(!(is.na(doc_count))) %>%
             dplyr::arrange(desc(kwic_count))
-
+} # end of else on #74 for if kwics have no results
       return(collocates)
       
 }
