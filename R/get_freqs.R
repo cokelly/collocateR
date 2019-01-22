@@ -44,15 +44,16 @@ get_freqs <- function(doc = doc, keyword = keyword, window = 6, ngram = 1, remov
       if(span !="both" & span != "b" & span !="left" & span != "l" & span != "right" & span != "r"){
             stop("span must equal both or left or right")
       }
-            
-# Remove spaces from the keyword / phrase
+      
+      
+      # Remove spaces from the keyword / phrase
       keyword_original <- keyword
       if(length(unlist(stringr::str_split(keyword, " ")) > 1)){
       keyword <- keyword_original %>%
             stringi::stri_replace_all_fixed(., " ", "_")
       doc <- gsub(keyword_original, keyword, doc)
       }
-
+      
       # Remove stopwords if required
       if(remove_stopwords == TRUE){
             stops = quanteda::stopwords()
