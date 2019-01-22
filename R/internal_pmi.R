@@ -14,16 +14,17 @@
 internal_pmi <- function(doc, keyword, window, ngram, remove_stopwords, min_count, span){
       
       freqs <- get_freqs(doc, keyword, window, ngram, remove_stopwords, span) %>%
-            filter(kwic_count >= as.numeric(min_count))
+            dplyr::filter(kwic_count >= as.numeric(min_count))
       
+      keyword_count <- freqs %>% filter(ngram == keyword) %>% .$kwic_count
       # Calculate the pmi
   pmi <- freqs %>%
-        add_column(wordcount = rep(sum(str_count(doc, "\\S+")), nrow(.))) %>% # Total wordcount
-        add_column(keyword_count = rep(sum(str_count(doc, keyword)), nrow(.))) %>% # Number of times the keyword occurs
-        mutate(probx = as.numeric(keyword_count/wordcount)) %>% #the probability of the keyword occuring
-        mutate(proby = as.numeric(doc_count/wordcount)) %>% # The probabilit of a collocate occurding across the full document
-        mutate(probxy = as.numeric(kwic_count/wordcount)) %>% # The probability of x and y collocating
-        mutate(pmi = as.numeric(log(probxy/(probx*proby))))
+        tibble::add_column(wordcount = rep(sum(stringr::str_count(doc, "\\S+")), nrow(.))) %>% # Total wordcount
+        tibble::add_column(keyword_count = rep(keyword_count, nrow(.))) %>% # Number of times the keyword occurs
+        dplyr::mutate(probx = as.numeric(keyword_count/wordcount)) %>% #the probability of the keyword occuring
+        dplyr::mutate(proby = as.numeric(doc_count/wordcount)) %>% # The probabilit of a collocate occurding across the full document
+        dplyr::mutate(probxy = as.numeric(kwic_count/wordcount)) %>% # The probability of x and y collocating
+        dplyr::mutate(pmi = as.numeric(log(probxy/(probx*proby))))
 
 return(pmi)
 }
