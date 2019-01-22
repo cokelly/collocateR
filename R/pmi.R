@@ -19,8 +19,8 @@ pmi <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE, mi
       
 # Calculate the pmi
 pmi <- internal_pmi %>%
-      select(ngram, pmi) %>%
-      arrange(desc(pmi)) 
+      dplyr::select(ngram, pmi) %>%
+      dplyr::arrange(desc(pmi)) 
 
 return(pmi)
 }

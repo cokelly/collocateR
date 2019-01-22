@@ -21,17 +21,20 @@ pmicubed <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRU
       freqs <- get_freqs(doc, keyword, window, ngram, remove_stopwords, span = span) %>%
             filter(kwic_count >= as.numeric(min_count))
       
+      # Return the keyword count from the get_freqs table
+      keyword_count <- freqs %>% filter(ngram == keyword) %>% .$kwic_count
+      
       # Calculate the mi score
       pmi3 <- freqs %>%
-            add_column(wordcount = rep(sum(str_count(doc, "\\S+")), nrow(.))) %>% # Total wordcount
-            add_column(keyword_count = rep(sum(str_count(doc, keyword)), nrow(.))) %>% # Number of times the keyword occurs
-            mutate(probx = as.numeric(keyword_count/wordcount)) %>% #the probability of the keyword occuring
-            mutate(proby = as.numeric(doc_count/wordcount)) %>% # The probabilit of a collocate occurding across the full document
-            mutate(probxy = as.numeric((kwic_count^3)/wordcount)) %>% # The probability of x and y collocating
-            mutate(probxproby = as.numeric(probx*proby)) %>% # The probabilit of a collocate occurding across the full document
-            mutate(pmi3 = as.numeric(log(probxy/probxproby))) %>%
-            arrange(desc(pmi3)) %>%
-            select(ngram, pmi3)
+            tibble::add_column(wordcount = rep(sum(str_count(doc, "\\S+")), nrow(.))) %>% # Total wordcount
+            tibble::add_column(keyword_count = rep(keyword_count, nrow(.))) %>% # Number of times the keyword occurs
+            dplyr::mutate(probx = as.numeric(keyword_count/wordcount)) %>% #the probability of the keyword occuring
+            dplyr::mutate(proby = as.numeric(doc_count/wordcount)) %>% # The probabilit of a collocate occurding across the full document
+            dplyr::mutate(probxy = as.numeric((kwic_count^3)/wordcount)) %>% # The probability of x and y collocating
+            dplyr::mutate(probxproby = as.numeric(probx*proby)) %>% # The probabilit of a collocate occurding across the full document
+            dplyr::mutate(pmi3 = as.numeric(log(probxy/probxproby))) %>%
+            dplyr::arrange(desc(pmi3)) %>%
+            dplyr::select(ngram, pmi3)
       
       return(pmi3)
 }

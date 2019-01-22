@@ -19,20 +19,24 @@ loglog <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE,
       # Using the forumula here: http://rdues.bcu.ac.uk/bncweb/manual/bncwebman-collocation.htm#formulae
       
       freqs <- get_freqs(doc, keyword, window, ngram, remove_stopwords, span = span) %>%
-            filter(kwic_count >= as.numeric(min_count))
+            dplyr::filter(kwic_count >= as.numeric(min_count))
+      
+      # Return the keyword count from the get_freqs table
+      keyword_count <- freqs %>% 
+            dplyr::filter(ngram == keyword) %>% .$kwic_count
       
       # Calculate the mi score
       loglog <- freqs %>%
-            add_column(wordcount = rep(sum(str_count(doc, "\\S+")), nrow(.))) %>% # Total wordcount
-            add_column(keyword_count = rep(sum(str_count(doc, keyword)), nrow(.))) %>% # Number of times the keyword occurs
-            mutate(probxy = as.numeric((kwic_count^3)/wordcount)) %>% # The probability of x and y collocating
-            mutate(probx = as.numeric(keyword_count/wordcount)) %>% #the probability of the keyword occuring
-            mutate(proby = as.numeric(doc_count/wordcount)) %>% # The probabilit of a collocate occurding across the full document
-            mutate(span = (window*2)+(length(unlist(str_split(keyword, " "))))) %>%
-            mutate(top = as.numeric(log(probxy/(probx*proby*span))*log(probxy))) %>%
-            mutate(`log-log` = as.numeric(log2(top^2))) %>%
-            arrange(desc(`log-log`)) %>%
-            select(ngram, `log-log`)
+            tibble::add_column(wordcount = rep(sum(str_count(doc, "\\S+")), nrow(.))) %>% # Total wordcount
+            tibble::add_column(keyword_count = rep(keyword_count, nrow(.))) %>% # Number of times the keyword occurs
+            dplyr::mutate(probxy = as.numeric((kwic_count^3)/wordcount)) %>% # The probability of x and y collocating
+            dplyr::mutate(probx = as.numeric(keyword_count/wordcount)) %>% #the probability of the keyword occuring
+            dplyr::mutate(proby = as.numeric(doc_count/wordcount)) %>% # The probabilit of a collocate occurding across the full document
+            dplyr::mutate(span = (window*2)+(length(unlist(str_split(keyword, " "))))) %>%
+            dplyr::mutate(top = as.numeric(log(probxy/(probx*proby*span))*log(probxy))) %>%
+            dplyr::mutate(`log-log` = as.numeric(log2(top^2))) %>%
+            dplyr::arrange(desc(`log-log`)) %>%
+            dplyr::select(ngram, `log-log`)
       
       return(loglog)
 }

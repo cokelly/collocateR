@@ -19,9 +19,9 @@ npmi <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE, m
       pmi <- internal_pmi(doc = doc, keyword = keyword, window = window, ngram = ngram, remove_stopwords = remove_stopwords, min_count = min_count, span = span)
       
       npmi <- pmi %>%
-            mutate(npmi = pmi/(-log(probxy))) %>%
+            dplyr::mutate(npmi = pmi/(-log(probxy))) %>%
             dplyr::select(ngram, npmi) %>% 
-            arrange(., desc(npmi)) 
+            dplyr::arrange(., desc(npmi)) 
 
 return(npmi)
 }

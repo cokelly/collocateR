@@ -24,18 +24,18 @@ zscore <- function(doc, keyword, window = 6, ngram = 1, remove_stopwords = TRUE,
       
   #calculcate the z-score
   z_score <- freqs %>%
-        add_column(wordcount = rep(sum(str_count(doc, "\\S+")), nrow(.))) %>% # Total wordcount
-        add_column(keyword_count = rep(sum(str_count(doc, keyword)), nrow(.))) %>% # Number of times the keyword occurs
+        tibble::add_column(wordcount = rep(sum(stringr::str_count(doc, "\\S+")), nrow(.))) %>% # Total wordcount
+        tibble::add_column(keyword_count = rep(sum(stringr::str_count(doc, keyword)), nrow(.))) %>% # Number of times the keyword occurs
         #prob = Probability of collocate occuring where the keyword does not occur:
         #frequency in document / overall word count - freq as kwic
-        mutate(prob = as.numeric((doc_count)/(wordcount - kwic_count))) %>%
+        dplyr::mutate(prob = as.numeric((doc_count)/(wordcount - kwic_count))) %>%
         # expected: how many times would collocate occur if randomly distributed?:
         # prob * freq of node * window * span
-        mutate(expected = as.numeric((prob*keyword_count*((window*2)+(unlist(length(str_split(keyword, " ")))))))) %>%
+        dplyr::mutate(expected = as.numeric((prob*keyword_count*((window*2)+(unlist(length(stringr::str_split(keyword, " ")))))))) %>%
         # (Fn,c-E/sqrt(E(1-p)))
-        mutate(zscore = as.numeric((kwic_count - expected)/(sqrt(expected*(1-prob))))) %>%
-        select(ngram, zscore) %>%
-        arrange(desc(zscore))
+        dplyr::mutate(zscore = as.numeric((kwic_count - expected)/(sqrt(expected*(1-prob))))) %>%
+        dplyr::select(ngram, zscore) %>%
+        dplyr::arrange(desc(zscore))
   
 return(z_score)
 }
