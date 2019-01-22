@@ -27,10 +27,10 @@ get_freqs <- function(doc = doc, keyword = keyword, window = 6, ngram = 1, remov
       if(is.list(doc) == TRUE){
             doc <- unlist(doc)
       }
-      if(is_character(doc) != TRUE){
+      if(purrr::is_character(doc) != TRUE){
             stop("collocateR will only act on character vectors (for now).")
       }
-      if(length(doc) > 1 && unique(map(doc, length)) == 1){
+      if(length(doc) > 1 && unique(purrr::map(doc, length)) == 1){
             doc <- paste(doc, sep = " ", collapse = " ")
       }
       
@@ -47,7 +47,7 @@ get_freqs <- function(doc = doc, keyword = keyword, window = 6, ngram = 1, remov
             
 # Remove spaces from the keyword / phrase
       keyword_original <- keyword
-      if(length(unlist(str_split(keyword, " ")) > 1)){
+      if(length(unlist(stringr::str_split(keyword, " ")) > 1)){
       keyword <- keyword_original %>%
             stringi::stri_replace_all_fixed(., " ", "_")
       doc <- gsub(keyword_original, keyword, doc)
@@ -73,7 +73,7 @@ get_freqs <- function(doc = doc, keyword = keyword, window = 6, ngram = 1, remov
       
       
       split_nas_emptyvectors <- function(vector){
-            vector_split <- unlist(str_split(vector, " "))
+            vector_split <- unlist(stringr::str_split(vector, " "))
             
             if(length(vector_split) < window){
                   times_length = window-(length(vector_split))
@@ -94,33 +94,33 @@ get_freqs <- function(doc = doc, keyword = keyword, window = 6, ngram = 1, remov
       kwics_process <- function(kwic_scheme, designated_span){
             
             kwics_process0 <- kwic_scheme %>%
-            as_tibble %>% 
-            select(docname, from, keyword, designated_span) %>% # narrow down to necessary cols
-            add_column(id = rep(1:nrow(.))) %>% # Give each kwic element its own idenfier
+            tibble::as_tibble(.) %>% 
+            dplyr::select(docname, from, keyword, designated_span) %>% # narrow down to necessary cols
+            tibble::add_column(id = rep(1:nrow(.))) %>% # Give each kwic element its own idenfier
             splitstackshape::cSplit_l(., split.col = designated_span, sep = " ") %>% # split string in the desired span
-            select(id, docname, from, working_list = paste(designated_span, "list", sep = "_")) %>% # narrow down again
-            mutate(working_list = purrr::map(working_list, function(x) split_nas_emptyvectors(x))) %>% # run the empty and short vectors function for the left 
-            mutate(working_list = map(working_list, function(x) 
-                        tibble(word = x))) %>% # Turn the vectors into tibbles
-            mutate(working_list = purrr::map2(working_list, docname, function(x, y) x %>%
-                                                add_column(docname = rep(y, window))))  # Add docnames to the tibbles
+            dplyr::select(id, docname, from, working_list = paste(designated_span, "list", sep = "_")) %>% # narrow down again
+            dplyr::mutate(working_list = purrr::map(working_list, function(x) split_nas_emptyvectors(x))) %>% # run the empty and short vectors function for the left 
+            dplyr::mutate(working_list = purrr::map(working_list, function(x) 
+                        tibble::tibble(word = x))) %>% # Turn the vectors into tibbles
+            dplyr::mutate(working_list = purrr::map2(working_list, docname, function(x, y) x %>%
+                                                tibble::add_column(docname = rep(y, window))))  # Add docnames to the tibbles
                                                 
             
             if(designated_span == "pre"){
                   kwics_process <- kwics_process0 %>%
-                        mutate(working_list = purrr::map2(working_list, docname, function(x, y) x %>%
-                                                                add_row(word = keyword, docname = y))) %>% # the keyword plus its docname))
-                        mutate(working_list = purrr::map2(working_list, from, function(x, y) x %>%
-                                                                add_column(keyword_loc = seq((y-(nrow(x)-1)), y)))) %>% # Add locations to the left tibbles
-                        mutate(working_list = purrr::map2(working_list, id, function(x, y) x %>%
-                                                                add_column(id = rep(y, nrow(x))))) # add id
+                        dplyr::mutate(working_list = purrr::map2(working_list, docname, function(x, y) x %>%
+                                                                tibble::add_row(word = keyword, docname = y))) %>% # the keyword plus its docname))
+                        dplyr::mutate(working_list = purrr::map2(working_list, from, function(x, y) x %>%
+                                                                tibble::add_column(keyword_loc = seq((y-(nrow(x)-1)), y)))) %>% # Add locations to the left tibbles
+                        dplyr::mutate(working_list = purrr::map2(working_list, id, function(x, y) x %>%
+                                                                tibble::add_column(id = rep(y, nrow(x))))) # add id
             }
             if(designated_span == "post"){
                   kwics_process <- kwics_process0 %>%
-                        mutate(working_list = purrr::map2(working_list, from, function(x, y) x %>%
-                                                                add_column(keyword_loc = seq((y+1), (y+(nrow(x))))))) %>% # Add locations to the right tibbles
-                        mutate(working_list = purrr::map2(working_list, id, function(x, y) x %>%
-                                                                add_column(id = rep(y, nrow(x))))) # add id
+                        dplyr::mutate(working_list = purrr::map2(working_list, from, function(x, y) x %>%
+                                                                tibble::add_column(keyword_loc = seq((y+1), (y+(nrow(x))))))) %>% # Add locations to the right tibbles
+                        dplyr::mutate(working_list = purrr::map2(working_list, id, function(x, y) x %>%
+                                                                       tibble::add_column(id = rep(y, nrow(x))))) # add id
             }
             
             return(kwics_process)
@@ -129,17 +129,17 @@ get_freqs <- function(doc = doc, keyword = keyword, window = 6, ngram = 1, remov
       # Develop a processed list by span
       if(span == "both" | span == "b"){
             left_kwics <- kwics_process(kwic_scheme, designated_span = "pre") %>%
-                  rename(pre_list = working_list)
+                  dplyr::rename(pre_list = working_list)
             right_kwics <- kwics_process(kwic_scheme, designated_span = "post") %>%
-                  rename(post_list = working_list)
+                  dplyr::rename(post_list = working_list)
       }
       if(span == "left" | span == "l"){
             left_kwics <- kwics_process(kwic_scheme, designated_span = "pre") %>%
-                  rename(pre_list = working_list)
+                  dplyr::rename(pre_list = working_list)
       }
       if(span == "right" | span == "r"){
             right_kwics <- kwics_process(kwic_scheme, designated_span = "post") %>%
-                  rename(post_list = working_list)
+                  dplyr::rename(post_list = working_list)
       }
       
       # Next step: 
@@ -150,40 +150,40 @@ get_freqs <- function(doc = doc, keyword = keyword, window = 6, ngram = 1, remov
       
       get_ngrams <- function(kwics_processed){
             if(span == "both" | span == "b"){
-                  ngrams0<- bind_rows(left_kwics$pre_list, right_kwics$post_list) 
+                  ngrams0<- dplyr::bind_rows(left_kwics$pre_list, right_kwics$post_list) 
             }
             if(span == "left" | span == "l"){
-                  ngrams0 <- bind_rows(left_kwics$pre_list)
+                  ngrams0 <- dplyr::bind_rows(left_kwics$pre_list)
             }
             if(span == "right" | span == "r"){
-                  ngrams0 <- bind_rows(right_kwics$post_list)
+                  ngrams0 <- dplyr::bind_rows(right_kwics$post_list)
             }
                   
       ngrams <- ngrams0 %>%
-            group_by(docname) %>% # Group by docname on the off-chance that two docs have the same loc
-            distinct(keyword_loc, .keep_all = TRUE) %>%
-            ungroup %>%
-            group_by(id) %>% # group by id to retrieve full sentences
-            mutate(full_sentence = paste(word, sep = " ", collapse = " ")) %>% 
-            select(docname, id, full_sentence) %>%
-            mutate(full_sentence = str_replace_all(full_sentence, "_", " ")) %>% # Remove underlines remaining in keywords
-            distinct(id, .keep_all = TRUE) %>% # Just keep one sentence per id
+            dplyr::group_by(docname) %>% # Group by docname on the off-chance that two docs have the same loc
+            dplyr::distinct(keyword_loc, .keep_all = TRUE) %>%
+            dplyr::ungroup(.) %>%
+            dplyr::group_by(id) %>% # group by id to retrieve full sentences
+            dplyr::mutate(full_sentence = paste(word, sep = " ", collapse = " ")) %>% 
+            dplyr::select(docname, id, full_sentence) %>%
+            dplyr::mutate(full_sentence = stringr::str_replace_all(full_sentence, "_", " ")) %>% # Remove underlines remaining in keywords
+            dplyr::distinct(id, .keep_all = TRUE) %>% # Just keep one sentence per id
             tidytext::unnest_tokens(., ngram, full_sentence, token = "ngrams", n = ngram) %>% # Get ngrams and count
-            ungroup %>%
-            group_by(ngram) %>%
-            summarise(kwic_count = n())
+            dplyr::ungroup(.) %>%
+            dplyr::group_by(ngram) %>%
+            dplyr::summarise(kwic_count = n())
             
             return(ngrams)
       }
       ngrams <- get_ngrams(kwics_processed)
 
-      doc <- str_replace_all(doc, "_", " ") # remove underlines from doc: no longer needed
+      doc <- stringr::str_replace_all(doc, "_", " ") # remove underlines from doc: no longer needed
       
       process_all_words <- function(doc){
-      all_words <- doc %>% tibble %>% 
-            tidytext::unnest_tokens(., ngram, ., token = "ngrams", n = ngram) %>% # Get ngrams
-            group_by(ngram) %>%
-            summarise(doc_count = n())
+      all_words <- doc %>% tibble::enframe(name = "text") %>% 
+            tidytext::unnest_tokens(., ngram, value, token = "ngrams", n = ngram) %>% # Get ngrams
+            dplyr::group_by(ngram) %>%
+            dplyr::summarise(doc_count = n())
       
       return(all_words)
       }
@@ -191,9 +191,9 @@ get_freqs <- function(doc = doc, keyword = keyword, window = 6, ngram = 1, remov
       all_words <- process_all_words(doc)
 
       collocates <- ngrams %>% # Assemble final table
-            left_join(., all_words, by = "ngram") %>%
-            filter(!(is.na(doc_count))) %>%
-            arrange(desc(kwic_count))
+            dplyr::left_join(., all_words, by = "ngram") %>%
+            dplyr::filter(!(is.na(doc_count))) %>%
+            dplyr::arrange(desc(kwic_count))
 
       return(collocates)
       
