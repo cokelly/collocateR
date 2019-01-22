@@ -12,7 +12,7 @@
 #' @importFrom tidytext unnest_tokens
 #' @importFrom quanteda tokens tokens_remove kwic stopwords
 #' @importFrom splitstackshape cSplit_l
-#' @importFrom purrr map map2
+#' @importFrom purrr map map2 is_character
 #' @keywords mutual information, collocates, kwic
 #' @export
 
